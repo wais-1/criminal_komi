@@ -61,8 +61,8 @@ border: none;</string>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>270</y>
+     <x>110</x>
+     <y>240</y>
      <width>191</width>
      <height>51</height>
     </rect>
@@ -133,6 +133,28 @@ color: rgba(8, 8, 8, 0.66);</string>
    </property>
    <property name="text">
     <string>Пароль</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>300</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 10px 15px;
+color: #FFE5E5;</string>
+   </property>
+   <property name="text">
+    <string>Назад</string>
    </property>
   </widget>
  </widget>

@@ -45,7 +45,7 @@ class Ui_Dialog(object):
         self.lineEdit_2.setEchoMode(QLineEdit.EchoMode.Password)
         self.pushButton = QPushButton(Dialog)
         self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setGeometry(QRect(100, 270, 191, 51))
+        self.pushButton.setGeometry(QRect(110, 240, 191, 51))
         self.pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.pushButton.setStyleSheet(u"border-radius: 10px;\n"
 "background-color: #3D0A0A;\n"
@@ -70,6 +70,14 @@ class Ui_Dialog(object):
         self.label_2.setStyleSheet(u"background-color: none;\n"
 "font-size: 10pt;\n"
 "color: rgba(8, 8, 8, 0.66);")
+        self.pushButton_2 = QPushButton(Dialog)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.pushButton_2.setGeometry(QRect(160, 300, 91, 41))
+        self.pushButton_2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_2.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 10px 15px;\n"
+"color: #FFE5E5;")
 
         self.retranslateUi(Dialog)
 
@@ -83,5 +91,6 @@ class Ui_Dialog(object):
         self.label.setText(QCoreApplication.translate("Dialog", u"\u041b\u043e\u0433\u0438\u043d", None))
         self.lineEdit.setText("")
         self.label_2.setText(QCoreApplication.translate("Dialog", u"\u041f\u0430\u0440\u043e\u043b\u044c", None))
+        self.pushButton_2.setText(QCoreApplication.translate("Dialog", u"\u041d\u0430\u0437\u0430\u0434", None))
     # retranslateUi
 

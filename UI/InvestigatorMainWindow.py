@@ -132,6 +132,14 @@ class Ui_MainWindow(object):
         self.lbl_username.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.lbl_username.setStyleSheet(u"background-color: none;\n"
 "font-size: 14pt;")
+        self.pushButton_10 = QPushButton(self.centralwidget)
+        self.pushButton_10.setObjectName(u"pushButton_10")
+        self.pushButton_10.setGeometry(QRect(10, 350, 191, 41))
+        self.pushButton_10.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_10.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -162,5 +170,6 @@ class Ui_MainWindow(object):
         self.btn_add_criminal_case.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0423\u0414", None))
         self.lbl_avatar.setText("")
         self.lbl_username.setText(QCoreApplication.translate("MainWindow", u"\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c", None))
+        self.pushButton_10.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043c\u0435\u0441\u0442\u043e", None))
     # retranslateUi
 
