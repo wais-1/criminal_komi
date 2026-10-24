@@ -367,6 +367,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.frame)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
+        self.scrollArea.setStyleSheet(u"border: none;\n"
+        "background-color: transparent;\n")
 
         self.horizontalLayout_3.addWidget(self.scrollArea)
 

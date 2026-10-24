@@ -19,6 +19,8 @@ from UI.AddEditLocation import Ui_Dialog as AddEditLocation
 from UI.AddEditRecord import Ui_Dialog as AddEditRecord
 from UI.AddEditSuspect import Ui_Dialog as AddEditSuspect
 from UI.CrimeCard import Ui_Form as CrimeCard
+from UI.CrimeWindow import Ui_MainWindow as CrimeWindow
+from UI.ProtocolWindow import Ui_MainWindow as ProtocolWindow
 
 
 def open_admin_window():
@@ -36,7 +38,7 @@ def open_admin_window():
     admin_ui.pushButton_6.clicked.connect(open_add_clue)
     admin_ui.pushButton_10.clicked.connect(open_add_location)
 
-    load_crime_card(admin_ui)
+    load_crime_card(admin_ui, "admin")
     admin_window.show()
 
 def open_user_window():
@@ -47,7 +49,7 @@ def open_user_window():
     user_ui.setupUi(user_window)
 
     user_ui.btn_filters.clicked.connect(open_filters_dialog)
-    load_crime_card(user_ui)
+    load_crime_card(user_ui, "user")
     user_window.show()
 
 def open_investigator_window():
@@ -58,7 +60,7 @@ def open_investigator_window():
     investigator_ui.setupUi(investigator_window)
 
     investigator_ui.btn_filters.clicked.connect(open_filters_dialog)
-    load_crime_card(investigator_ui)
+    load_crime_card(investigator_ui, "investigator")
     investigator_window.show()
 
 def open_filters_dialog():
@@ -124,7 +126,26 @@ def open_add_location():
 
     location_window.show()
 
-def load_crime_card(window):
+def open_crime_window():
+    global crime_window, crime_ui
+        
+    crime_window = QMainWindow()
+    crime_ui = CrimeWindow()
+    crime_ui.setupUi(crime_window)
+
+    crime_ui.btn_read_protocol.clicked.connect(open_protocol_window)
+    crime_window.show()
+
+def open_protocol_window():
+    global protocol_window, protocol_ui
+        
+    protocol_window = QMainWindow()
+    protocol_ui = ProtocolWindow()
+    protocol_ui.setupUi(protocol_window)
+
+    protocol_window.show()
+
+def load_crime_card(window, role):
     global crime_card_window, card_crime_ui
     crime_card = dbconnect.get_crime_card()
 
@@ -149,6 +170,8 @@ def load_crime_card(window):
         crime_card_ui = CrimeCard()
         crime_card_ui.setupUi(crime_card_window)
 
+        crime_card_ui.btn_read.clicked.connect(open_crime_window)
+
         crime_card_ui.lbl_name.setText(str(crime[0] or ""))
         crime_card_ui.lbl_mini_descr.setText(str(crime[1] or ""))
 
@@ -159,9 +182,18 @@ def load_crime_card(window):
         )
 
         layout.addWidget(crime_card_window)
-        if window == user_ui:
+
+        if role == "admin":
+            crime_card_ui.btn_delete.setVisible(True)
+            crime_card_ui.btn_edit.setVisible(True)
+
+        elif role == "user":
             crime_card_ui.btn_delete.setVisible(False)
             crime_card_ui.btn_edit.setVisible(False)
+
+        elif role == "investigator":
+            crime_card_ui.btn_delete.setVisible(False)
+            crime_card_ui.btn_edit.setVisible(True)
 
     layout.addStretch()
     scroll_area.setWidgetResizable(True)
