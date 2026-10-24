@@ -16,7 +16,16 @@ def set_user(login, password):
             cursor.execute("insert into user(login, password, id_role) values (%s, %s, 5)", (login, password))
             conn.commit()
             return True
-            # conn.close()
     except Exception as e:
         print(f'error: {e}')
         return False
+
+def get_crime_card():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select name, mini_description from crime order by name")
+            crimes = cursor.fetchall()
+        return crimes
+    except Exception as e:
+        print(f'error: {e}')

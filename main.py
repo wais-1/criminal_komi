@@ -2,7 +2,7 @@ import sys
 
 import dbconnect
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QScrollArea, QWidget, QVBoxLayout, QLabel, QSizePolicy
 
 from PySide6.QtCore import Qt
 
@@ -18,6 +18,8 @@ from UI.AddEditCriminalCase import Ui_Dialog as AddEditCriminalCase
 from UI.AddEditLocation import Ui_Dialog as AddEditLocation
 from UI.AddEditRecord import Ui_Dialog as AddEditRecord
 from UI.AddEditSuspect import Ui_Dialog as AddEditSuspect
+from UI.CrimeCard import Ui_Form as CrimeCard
+
 
 def open_admin_window():
     global admin_window, admin_ui
@@ -34,6 +36,7 @@ def open_admin_window():
     admin_ui.pushButton_6.clicked.connect(open_add_clue)
     admin_ui.pushButton_10.clicked.connect(open_add_location)
 
+    load_crime_card(admin_ui)
     admin_window.show()
 
 def open_user_window():
@@ -44,7 +47,7 @@ def open_user_window():
     user_ui.setupUi(user_window)
 
     user_ui.btn_filters.clicked.connect(open_filters_dialog)
-
+    load_crime_card(user_ui)
     user_window.show()
 
 def open_investigator_window():
@@ -55,7 +58,7 @@ def open_investigator_window():
     investigator_ui.setupUi(investigator_window)
 
     investigator_ui.btn_filters.clicked.connect(open_filters_dialog)
-
+    load_crime_card(investigator_ui)
     investigator_window.show()
 
 def open_filters_dialog():
@@ -120,6 +123,48 @@ def open_add_location():
     location_ui.setupUi(location_window)
 
     location_window.show()
+
+def load_crime_card(window):
+    global crime_card_window, card_crime_ui
+    crime_card = dbconnect.get_crime_card()
+
+    scroll_area = window.scrollArea
+
+    if scroll_area is None:
+        print('скролл не неайден')
+        return
+
+    container = window.scrollAreaWidgetContents
+
+    layout = container.layout()
+    if layout is None:
+        layout = QVBoxLayout(container)
+
+    layout.setContentsMargins(10, 10, 10, 10)
+    layout.setSpacing(10)
+    layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+    for crime in crime_card:
+        crime_card_window = QWidget()
+        crime_card_ui = CrimeCard()
+        crime_card_ui.setupUi(crime_card_window)
+
+        crime_card_ui.lbl_name.setText(str(crime[0] or ""))
+        crime_card_ui.lbl_mini_descr.setText(str(crime[1] or ""))
+
+        crime_card_window.setMinimumHeight(200)
+        crime_card_window.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Fixed
+        )
+
+        layout.addWidget(crime_card_window)
+        if window == user_ui:
+            crime_card_ui.btn_delete.setVisible(False)
+            crime_card_ui.btn_edit.setVisible(False)
+
+    layout.addStretch()
+    scroll_area.setWidgetResizable(True)
 
 def authorization():
     login = login_ui.lineEdit.text()
