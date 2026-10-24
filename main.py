@@ -73,11 +73,11 @@ def open_filters_dialog():
     filters_window.show()
 
 def open_add_crime():
-    global crime_window, crime_ui
+    global crime_add_window, crime_add_ui
     
-    crime_window = QMainWindow()
-    crime_ui = AddEditCrime()
-    crime_ui.setupUi(crime_window)
+    crime_add_window = QMainWindow()
+    crime_add_ui = AddEditCrime()
+    crime_add_ui.setupUi(crime_add_window)
 
     crime_window.show()
 
@@ -126,7 +126,7 @@ def open_add_location():
 
     location_window.show()
 
-def open_crime_window():
+def open_crime_window(crime_id):
     global crime_window, crime_ui
         
     crime_window = QMainWindow()
@@ -134,6 +134,7 @@ def open_crime_window():
     crime_ui.setupUi(crime_window)
 
     crime_ui.btn_read_protocol.clicked.connect(open_protocol_window)
+    load_crime_window(crime_id)
     crime_window.show()
 
 def open_protocol_window():
@@ -169,11 +170,12 @@ def load_crime_card(window, role):
         crime_card_window = QWidget()
         crime_card_ui = CrimeCard()
         crime_card_ui.setupUi(crime_card_window)
+        crime_id = crime[0]
 
-        crime_card_ui.btn_read.clicked.connect(open_crime_window)
+        crime_card_ui.btn_read.clicked.connect(lambda checked=False, cid=crime_id: open_crime_window(cid))
 
-        crime_card_ui.lbl_name.setText(str(crime[0] or ""))
-        crime_card_ui.lbl_mini_descr.setText(str(crime[1] or ""))
+        crime_card_ui.lbl_name.setText(str(crime[1] or ""))
+        crime_card_ui.lbl_mini_descr.setText(str(crime[2] or ""))
 
         crime_card_window.setMinimumHeight(200)
         crime_card_window.setSizePolicy(
@@ -197,6 +199,57 @@ def load_crime_card(window, role):
 
     layout.addStretch()
     scroll_area.setWidgetResizable(True)
+
+def load_crime_window(crime_id):
+    suspect = dbconnect.get_suspect_by_id(crime_id)
+    crimes = dbconnect.get_crime_by_id(crime_id)
+    clues = dbconnect.get_clue_by_id(crime_id)
+    cases = dbconnect.get_case_by_id(crime_id)
+
+    print("Полученный ID:", crime_id)
+    print("Результат запроса:", clues)
+
+    if crimes is None:
+        print("преступление не найдено")
+        return
+
+    if suspect is None:
+        print("преступник не найдено")
+        return
+
+    if clues is None:
+        print("clue не найдено")
+        return
+
+    if cases is None:
+        print("case не найдено")
+        return
+
+    crime_ui.lbl_fullname.setText(str(suspect[1] or ""))
+    crime_ui.lbl_date_birth.setText(str(suspect[2] or ""))
+    crime_ui.lbl_signs.setText(str(suspect[3] or ""))
+    if suspect:
+        crime_ui.lbl_status.setText(str(suspect[4] or "Не указан"))
+    else:
+        crime_ui.lbl_status.setText("Не указан")
+
+    crime_ui.lbl_article_name.setText(str(crimes[1] or ""))
+    crime_ui.lbl_article_date.setText(str(crimes[3] or ""))
+    crime_ui.lbl_article_status.setText(str(crimes[4] or ""))
+    crime_ui.lbl_type.setText(str(crimes[5] or ""))
+    crime_ui.lbl_secret.setText(str(crimes[6] or ""))
+    crime_ui.lbl_date_text.setText(str(crimes[2] or "Нет описания"))
+
+    crime_ui.lbl_clue_nomination.setText(str(clues[1] or ""))
+    crime_ui.lbl_clue_date.setText(str(clues[2] or ""))
+    crime_ui.lbl_clue_descr.setText(str(clues[3] or ""))
+    crime_ui.lbl_clue_type.setText(str(clues[4] or ""))
+
+    crime_ui.lbl_case_number.setText(str(cases[1] or ""))
+    crime_ui.lbl_case.setText(str(cases[2] or ""))
+    crime_ui.lbl_date_open.setText(str(cases[3] or ""))
+    crime_ui.lbl_date_close.setText(str(cases[4] or "Не закрыто"))
+
 
 def authorization():
     login = login_ui.lineEdit.text()
