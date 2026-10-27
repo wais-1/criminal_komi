@@ -2,7 +2,7 @@ import sys
 
 import dbconnect
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QScrollArea, QWidget, QVBoxLayout, QLabel, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QScrollArea, QWidget, QVBoxLayout, QLabel, QSizePolicy, QMessageBox
 
 from PySide6.QtCore import Qt
 
@@ -21,8 +21,11 @@ from UI.AddEditSuspect import Ui_Dialog as AddEditSuspect
 from UI.CrimeCard import Ui_Form as CrimeCard
 from UI.CrimeWindow import Ui_MainWindow as CrimeWindow
 from UI.ProtocolWindow import Ui_MainWindow as ProtocolWindow
+from UI.AddVictim import Ui_Dialog as AddVictim
+from UI.AddWitness import Ui_Dialog as AddWitness
+from UI.AddSuspectCrime import Ui_Dialog as AddSuspectCrime
 
-
+#открытие окна админа
 def open_admin_window():
     global admin_window, admin_ui
 
@@ -37,10 +40,14 @@ def open_admin_window():
     admin_ui.pushButton_5.clicked.connect(open_add_suspect)
     admin_ui.pushButton_6.clicked.connect(open_add_clue)
     admin_ui.pushButton_10.clicked.connect(open_add_location)
+    admin_ui.pushButton_11.clicked.connect(open_add_victim)
+    admin_ui.pushButton_12.clicked.connect(open_add_witness)
+    admin_ui.pushButton_13.clicked.connect(open_suspect_crime)
 
     load_crime_card(admin_ui, "admin")
     admin_window.show()
 
+#открытие окна пользователя
 def open_user_window():
     global user_window, user_ui
 
@@ -52,6 +59,7 @@ def open_user_window():
     load_crime_card(user_ui, "user")
     user_window.show()
 
+#открытие окна следака
 def open_investigator_window():
     global investigator_window, investigator_ui
     
@@ -63,6 +71,7 @@ def open_investigator_window():
     load_crime_card(investigator_ui, "investigator")
     investigator_window.show()
 
+#открытие окон добавления и редактирования данных
 def open_filters_dialog():
     global filters_window, filters_ui
 
@@ -72,6 +81,57 @@ def open_filters_dialog():
 
     filters_window.show()
 
+def open_suspect_crime():
+    global suspect_crime_window, suspect_crime_ui
+        
+    suspect_crime_window = QDialog()
+    suspect_crime_ui = AddSuspectCrime()
+    suspect_crime_ui.setupUi(suspect_crime_window)
+
+    suspect_crime_ui.buttonBox.rejected.connect(suspect_crime_window.close)
+    suspect_crime_ui.buttonBox.accepted.connect(add_suspect_crime)
+
+    suspects = dbconnect.get_suspects()
+    suspect_crime_ui.comboBox.clear()
+
+    #отображение данных вместо id в комбобоксах
+    for i in suspects:
+        suspect_id = i[0]
+        suspect_name = i[1]
+
+        suspect_crime_ui.comboBox.addItem(
+            suspect_name,
+            suspect_id
+        )
+
+    crimes = dbconnect.get_crimes()
+    suspect_crime_ui.comboBox_2.clear()
+
+    for i in crimes:
+            crime_id = i[0]
+            crime_name = i[1]
+    
+            suspect_crime_ui.comboBox_2.addItem(
+                crime_name,
+                crime_id
+            )
+
+    suspect_crime_window.show()
+
+def add_suspect_crime():
+    suspect_id = suspect_crime_ui.comboBox.currentData()
+    crime_id = suspect_crime_ui.comboBox_2.currentData()
+
+    if suspect_id is not None and crime_id is not None:
+        success = dbconnect.set_suspect_crime(suspect_id, crime_id)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        crime_add_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#окно добавления преступления
 def open_add_crime():
     global crime_add_window, crime_add_ui
     
@@ -79,8 +139,88 @@ def open_add_crime():
     crime_add_ui = AddEditCrime()
     crime_add_ui.setupUi(crime_add_window)
 
-    crime_window.show()
+    crime_add_ui.buttonBox.rejected.connect(crime_add_window.close)
+    crime_add_ui.buttonBox.accepted.connect(add_crime)
+    crime_add_ui.label_11.setVisible(False)
+    crime_add_ui.pushButton.clicked.connect(edit_crime)
 
+    status = dbconnect.get_crime_status()
+    crime_add_ui.comboBox.clear()
+
+    #отображение enum в комбобоксах
+    for i in status:
+        crime_add_ui.comboBox.addItem(i[1], i[0])
+
+    crime_type = dbconnect.get_crime_type()
+    crime_add_ui.comboBox_2.clear()
+
+    for i in crime_type:
+        crime_add_ui.comboBox_2.addItem(i[1], i[0])
+
+    security = dbconnect.get_crime_security()
+    crime_add_ui.comboBox_3.clear()
+
+    for i in security:
+        crime_add_ui.comboBox_3.addItem(i[1], i[0])
+
+    crime_add_window.show()
+
+
+#добавление преступления
+def add_crime():
+    name = crime_add_ui.lineEdit.text()
+    mini_description = crime_add_ui.lineEdit_2.text()
+    description = crime_add_ui.lineEdit_3.text()
+    date = crime_add_ui.dateEdit.date().toString("yyyy-MM-dd")
+    id_location_text = crime_add_ui.lineEdit_5.text().strip()
+    if id_location_text:
+        id_location = int(id_location_text)
+    else:
+        id_location = None
+    status = crime_add_ui.comboBox.currentText()
+    crime_type = crime_add_ui.comboBox_2.currentText()
+    security = crime_add_ui.comboBox_3.currentText()
+    
+
+    success = dbconnect.set_crime(name, mini_description, description, date, status, crime_type, security, id_location)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        crime_add_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование преступления
+def edit_crime():
+    crime_id_text = crime_add_ui.lineEdit_7.text().strip()
+
+    if not crime_id_text:
+        crime_add_ui.label_11.setVisible(True)
+        return
+
+    crime_id = int(crime_id_text)
+
+    name = crime_add_ui.lineEdit.text()
+    mini_description = crime_add_ui.lineEdit_2.text()
+    description = crime_add_ui.lineEdit_3.text()
+    date = crime_add_ui.dateEdit.date().toString("yyyy-MM-dd")
+    id_location_text = crime_add_ui.lineEdit_5.text().strip()
+    if id_location_text:
+        id_location = int(id_location_text)
+    else:
+        id_location = None
+    status = crime_add_ui.comboBox.currentText()
+    crime_type = crime_add_ui.comboBox_2.currentText()
+    security = crime_add_ui.comboBox_3.currentText()
+
+    success = dbconnect.update_crime(crime_id, name, mini_description, description, date, status, crime_type, security, id_location)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        crime_add_ui.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления УД
 def open_add_case():
     global case_window, case_ui
     
@@ -88,8 +228,82 @@ def open_add_case():
     case_ui = AddEditCriminalCase()
     case_ui.setupUi(case_window)
 
+    case_ui.buttonBox.rejected.connect(case_window.close)
+    case_ui.buttonBox.accepted.connect(add_case)
+    case_ui.label_10.setVisible(False)
+    case_ui.pushButton.clicked.connect(edit_case)
+
     case_window.show()
 
+#добавление УД
+def add_case():
+    case_number = case_ui.lineEdit.text()
+    opening_date = case_ui.dateEdit.date().toString("yyyy-MM-dd")
+    closing_date = case_ui.dateEdit_2.date().toString("yyyy-MM-dd")
+    article = case_ui.lineEdit_2.text()
+    id_record_text = case_ui.lineEdit_4.text().strip()
+    if id_record_text:
+        id_record = int(id_record_text)
+    else:
+        id_record = None
+    id_investigator_text = case_ui.lineEdit_5.text().strip()
+    if id_investigator_text:
+        id_investigator = int(id_investigator_text)
+    else:
+        id_investigator = None
+    id_crime_text = case_ui.lineEdit_6.text().strip()
+    if id_crime_text:
+        id_crime = int(id_crime_text)
+    else:
+        id_crime = None
+    
+
+    success = dbconnect.set_criminal_case(case_number, opening_date, closing_date, article, id_record, id_investigator, id_crime)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        case_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование УД
+def edit_case():
+    case_id_text = case_ui.lineEdit_7.text().strip()
+
+    if not case_id_text:
+        case_ui.label_10.setVisible(True)
+        return
+
+    case_id = int(case_id_text)
+
+    case_number = case_ui.lineEdit.text()
+    opening_date = case_ui.dateEdit.date().toString("yyyy-MM-dd")
+    closing_date = case_ui.dateEdit_2.date().toString("yyyy-MM-dd")
+    article = case_ui.lineEdit_2.text()
+    id_record_text = case_ui.lineEdit_4.text().strip()
+    if id_record_text:
+        id_record = int(id_record_text)
+    else:
+        id_record = None
+    id_investigator_text = case_ui.lineEdit_5.text().strip()
+    if id_investigator_text:
+        id_investigator = int(id_investigator_text)
+    else:
+        id_investigator = None
+    id_crime_text = case_ui.lineEdit_6.text().strip()
+    if id_crime_text:
+        id_crime = int(id_crime_text)
+    else:
+        id_crime = None
+
+    success = dbconnect.update_criminal_case(case_id, case_number, opening_date, closing_date, article, id_record, id_investigator, id_crime)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        case_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления протокола допроса
 def open_add_record():
     global record_window, record_ui
     
@@ -97,8 +311,11 @@ def open_add_record():
     record_ui = AddEditRecord()
     record_ui.setupUi(record_window)
 
+    record_ui.buttonBox.rejected.connect(record_window.close)
+
     record_window.show()
 
+#окно добавления улики
 def open_add_clue():
     global clue_window, clue_ui
     
@@ -106,8 +323,68 @@ def open_add_clue():
     clue_ui = AddEditClue()
     clue_ui.setupUi(clue_window)
 
+    clue_ui.buttonBox.rejected.connect(clue_window.close)
+    clue_ui.buttonBox.accepted.connect(add_clue)
+    clue_ui.label_11.setVisible(False)
+    clue_ui.pushButton.clicked.connect(edit_clue)
+
+    status = dbconnect.get_clue_type()
+    clue_ui.comboBox.clear()
+
+    for i in status:
+        clue_ui.comboBox.addItem(i[1], i[0])
+
     clue_window.show()
 
+#добавление улики
+def add_clue():
+    name = clue_ui.lineEdit.text()
+    date = clue_ui.dateEdit.date().toString("yyyy-MM-dd")
+    description = clue_ui.lineEdit_2.text()
+    clue_type = clue_ui.comboBox.currentText()
+    id_clue_text = clue_ui.lineEdit_3.text().strip()
+    if id_clue_text:
+        id_clue = int(id_clue_text)
+    else:
+        id_clue = None
+    
+
+    success = dbconnect.set_clue(name, date, clue_type, description, id_clue)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        clue_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование улики
+def edit_clue():
+    clue_id_text = clue_ui.lineEdit_7.text().strip()
+
+    if not clue_id_text:
+        clue_ui.label_11.setVisible(True)
+        return
+
+    clue_id = int(clue_id_text)
+
+    name = clue_ui.lineEdit.text()
+    date = clue_ui.dateEdit.date().toString("yyyy-MM-dd")
+    description = clue_ui.lineEdit_2.text()
+    clue_type = clue_ui.comboBox.currentText()
+    id_crime_text = case_ui.lineEdit_4.text().strip()
+    if id_crime_text:
+        id_crime = int(id_crime_text)
+    else:
+        id_crime = None
+
+    success = dbconnect.update_clue(clue_id, name, date, clue_type, description, id_crime)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        clue_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления преступника
 def open_add_suspect():
     global suspect_window, suspect_ui
     
@@ -115,8 +392,59 @@ def open_add_suspect():
     suspect_ui = AddEditSuspect()
     suspect_ui.setupUi(suspect_window)
 
+    suspect_ui.buttonBox.rejected.connect(suspect_window.close)
+    suspect_ui.buttonBox.accepted.connect(add_suspect)
+    suspect_ui.label_11.setVisible(False)
+    suspect_ui.pushButton.clicked.connect(edit_suspect)
+
+    status = dbconnect.get_suspect_status()
+    suspect_ui.comboBox.clear()
+
+    for i in status:
+        suspect_ui.comboBox.addItem(i[1], i[0])
+
     suspect_window.show()
 
+#добавление преступника
+def add_suspect():
+    full_name = suspect_ui.lineEdit.text()
+    birth_date = suspect_ui.dateEdit.date().toString("yyyy-MM-dd")
+    img_url = suspect_ui.lineEdit_3.text()
+    marks = suspect_ui.lineEdit_2.text()
+    status = suspect_ui.comboBox.currentText()
+    
+    success = dbconnect.set_suspect(full_name, img_url, birth_date, marks, status)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        suspect_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование преступника
+def edit_suspect():
+    suspect_id_text = suspect_ui.lineEdit_7.text().strip()
+
+    if not suspect_id_text:
+        suspect_ui.label_11.setVisible(True)
+        return
+
+    suspect_id = int(suspect_id_text)
+
+    full_name = suspect_ui.lineEdit.text()
+    birth_date = suspect_ui.dateEdit.date().toString("yyyy-MM-dd")
+    img_url = suspect_ui.lineEdit_3.text()
+    marks = suspect_ui.lineEdit_2.text()
+    status = suspect_ui.comboBox.currentText()
+
+    success = dbconnect.update_suspect(suspect_id, full_name, img_url, birth_date, marks, status)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        suspect_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления места преступления
 def open_add_location():
     global location_window, location_ui
     
@@ -124,8 +452,178 @@ def open_add_location():
     location_ui = AddEditLocation()
     location_ui.setupUi(location_window)
 
+    location_ui.buttonBox.rejected.connect(location_window.close)
+    location_ui.buttonBox.accepted.connect(add_location)
+    location_ui.pushButton.clicked.connect(edit_location)
+    location_ui.label_11.setVisible(False)
+    
+    status = dbconnect.get_location_type()
+    location_ui.comboBox.clear()
+
+    for i in status:
+        location_ui.comboBox.addItem(i[1], i[0])
+
     location_window.show()
 
+#добавление свидетеля
+def add_location():
+    coordinates = location_ui.lineEdit.text()
+    address = location_ui.lineEdit_2.text()
+    district = location_ui.lineEdit_3.text()
+    object_type = location_ui.comboBox.currentText()
+    
+    success = dbconnect.set_location(coordinates, address, district, object_type)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        location_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование свидетеля
+def edit_location():
+    location_id_text = location_ui.lineEdit_7.text().strip()
+
+    if not location_id_text:
+        witness_ui.label_11.setVisible(True)
+        return
+
+    location_id = int(location_id_text)
+
+    coordinates = location_ui.lineEdit.text()
+    address = location_ui.lineEdit_2.text()
+    district = location_ui.lineEdit_3.text()
+    object_type = location_ui.comboBox.currentText()
+
+    success = dbconnect.update_location(location_id, coordinates, address, district, object_type)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        location_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления потерпевшего
+def open_add_victim():
+    global victim_window, victim_ui
+    
+    victim_window = QMainWindow()
+    victim_ui = AddVictim()
+    victim_ui.setupUi(victim_window)
+
+    victim_ui.buttonBox.rejected.connect(victim_window.close)
+    victim_ui.buttonBox.accepted.connect(add_victim)
+    victim_ui.pushButton.clicked.connect(edit_victim)
+    victim_ui.label_11.setVisible(False)
+        
+    status = dbconnect.get_victim_status()
+    victim_ui.comboBox.clear()
+
+    for i in status:
+        victim_ui.comboBox.addItem(i[1], i[0])
+
+    victim_window.show()
+
+#добавление потерпевшего
+def add_victim():
+    full_name = victim_ui.lineEdit.text()
+    birth_date = victim_ui.dateEdit.date().toString("yyyy-MM-dd")
+    severity = victim_ui.lineEdit_2.text()
+    status = victim_ui.comboBox.currentText()
+    
+    success = dbconnect.set_victim(full_name, birth_date, severity, status)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        suspect_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование потерпевшего
+def edit_victim():
+    victim_id_text = victim_ui.lineEdit_7.text().strip()
+
+    if not victim_id_text:
+        victim_ui.label_11.setVisible(True)
+        return
+
+    victim_id = int(victim_id_text)
+
+    full_name = victim_ui.lineEdit.text()
+    birth_date = victim_ui.dateEdit.date().toString("yyyy-MM-dd")
+    severity = victim_ui.lineEdit_2.text()
+    status = victim_ui.comboBox.currentText()
+
+    success = dbconnect.update_victim(victim_id, full_name, birth_date, severity, status)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        victim_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно добавления свидетеля
+def open_add_witness():
+    global witness_window, witness_ui
+    
+    witness_window = QMainWindow()
+    witness_ui = AddWitness()
+    witness_ui.setupUi(witness_window)
+
+    witness_ui.buttonBox.rejected.connect(witness_window.close)
+    witness_ui.label_11.setVisible(False)
+    witness_ui.buttonBox.accepted.connect(add_witness)
+    witness_ui.pushButton.clicked.connect(edit_witness)
+
+            
+    levels = dbconnect.get_witness_levels()
+    witness_ui.comboBox_2.clear()
+
+    for i in levels:
+        witness_ui.comboBox_2.addItem(i[1], i[0])
+
+    stages = dbconnect.get_witness_stages()
+    witness_ui.comboBox.clear()
+
+    for i in stages:
+        witness_ui.comboBox.addItem(i[1], i[0])
+
+    witness_window.show()
+
+#добавление свидетеля
+def add_witness():
+    full_name = witness_ui.lineEdit.text()
+    levels = witness_ui.comboBox_2.currentText()
+    stages = witness_ui.comboBox.currentText()
+    
+    success = dbconnect.set_witness(full_name, levels, stages)
+
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно добавили информацию")
+        witness_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при добавлении информации")
+
+#редактирование свидетеля
+def edit_witness():
+    witness_id_text = witness_ui.lineEdit_7.text().strip()
+
+    if not witness_id_text:
+        witness_ui.label_11.setVisible(True)
+        return
+
+    witness_id = int(witness_id_text)
+
+    full_name = witness_ui.lineEdit.text()
+    levels = witness_ui.comboBox_2.currentText()
+    stages = witness_ui.comboBox.currentText()
+
+    success = dbconnect.update_witness(witness_id, full_name, levels, stages)
+    if success:
+        QMessageBox.information(None, "Успешно", "Вы успешно обновили информацию")
+        witness_window.close()
+    else:
+        QMessageBox.warning(None, "Ошибка", "Ошибка при обновлении информации")
+
+#окно преступления
 def open_crime_window(crime_id):
     global crime_window, crime_ui
         
@@ -137,6 +635,7 @@ def open_crime_window(crime_id):
     load_crime_window(crime_id)
     crime_window.show()
 
+#окно протокола допроса
 def open_protocol_window():
     global protocol_window, protocol_ui
         
@@ -146,6 +645,7 @@ def open_protocol_window():
 
     protocol_window.show()
 
+#отображение карточки преступления
 def load_crime_card(window, role):
     global crime_card_window, card_crime_ui
     crime_card = dbconnect.get_crime_card()
@@ -200,6 +700,7 @@ def load_crime_card(window, role):
     layout.addStretch()
     scroll_area.setWidgetResizable(True)
 
+#отображение данных в окне преступления
 def load_crime_window(crime_id):
     suspect = dbconnect.get_suspect_by_id(crime_id)
     crimes = dbconnect.get_crime_by_id(crime_id)
@@ -250,7 +751,7 @@ def load_crime_window(crime_id):
     crime_ui.lbl_date_open.setText(str(cases[3] or ""))
     crime_ui.lbl_date_close.setText(str(cases[4] or "Не закрыто"))
 
-
+#авторизация пользователя
 def authorization():
     login = login_ui.lineEdit.text()
     password = login_ui.lineEdit_2.text()
@@ -272,7 +773,7 @@ def authorization():
         login_ui.label_6.setVisible(True)
         login_ui.label_5.setVisible(True)
 
-
+#проверка на существование пользователя и корректность введенных данных
 def check_login(loginValue, passValue):
     conn = dbconnect.get_db_connection()
 
@@ -285,6 +786,7 @@ def check_login(loginValue, passValue):
         conn.close()
         return role
 
+#окно регистрации пользователя
 def open_registration_window():
     global signin_window, signin_ui
 
@@ -298,6 +800,7 @@ def open_registration_window():
     signin_window.show()
     login_window.close()
 
+#регистрация
 def registration():
     login = signin_ui.lineEdit.text()
     password = signin_ui.lineEdit_2.text()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>520</height>
+    <height>610</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,7 +145,7 @@ border: none;</string>
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>440</y>
+     <y>530</y>
      <width>162</width>
      <height>61</height>
     </rect>
@@ -220,7 +220,7 @@ color: rgba(8, 8, 8, 0.66);</string>
     <rect>
      <x>30</x>
      <y>300</y>
-     <width>341</width>
+     <width>231</width>
      <height>51</height>
     </rect>
    </property>
@@ -232,6 +232,99 @@ border: none;</string>
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_7">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>450</y>
+     <width>221</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(8, 8, 8, 0.66);
+padding: 10px 20px;
+border-radius: 10px;
+border: none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>430</y>
+     <width>351</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: none;
+font-size: 12pt;
+color: rgba(8, 8, 8, 0.66);</string>
+   </property>
+   <property name="text">
+    <string>Для ОБНОВЛЕНИЯ информации введите id преступника</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>450</y>
+     <width>100</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+   </property>
+   <property name="text">
+    <string>Обновить</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_11">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>500</y>
+     <width>351</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: none;
+font-size: 12pt;
+color: rgba(255, 8, 8, 0.66);</string>
+   </property>
+   <property name="text">
+    <string>Введите id для обновления</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>300</y>
+     <width>100</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+   </property>
+   <property name="text">
+    <string>Добавить</string>
    </property>
   </widget>
  </widget>

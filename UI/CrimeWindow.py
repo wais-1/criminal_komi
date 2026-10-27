@@ -57,6 +57,10 @@ class Ui_MainWindow(object):
         self.lbl_img = QLabel(self.frame)
         self.lbl_img.setObjectName(u"lbl_img")
         self.lbl_img.setStyleSheet(u"background-color: #000000;")
+        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
+        "background-color: transparent;\n")
+        self.scrollArea.setStyleSheet(u"border: none;\n"
+        "background-color: transparent;\n")
 
         self.horizontalLayout_4.addWidget(self.lbl_img)
 

@@ -17,13 +17,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QComboBox, QDateEdit,
     QDialog, QDialogButtonBox, QLabel, QLineEdit,
-    QSizePolicy, QWidget)
+    QPushButton, QSizePolicy, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(400, 520)
+        Dialog.resize(400, 610)
         Dialog.setStyleSheet(u"background: qlineargradient(\n"
 "    x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "    stop: 0.09 #6E0204,\n"
@@ -44,7 +44,7 @@ class Ui_Dialog(object):
 "color: rgba(8, 8, 8, 0.66);")
         self.buttonBox = QDialogButtonBox(Dialog)
         self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setGeometry(QRect(120, 440, 162, 61))
+        self.buttonBox.setGeometry(QRect(110, 520, 162, 61))
         self.buttonBox.setStyleSheet(u"border-radius: 10px;\n"
 "background-color: #3D0A0A;\n"
 "padding: 15px;\n"
@@ -106,6 +106,32 @@ class Ui_Dialog(object):
         self.dateEdit.setObjectName(u"dateEdit")
         self.dateEdit.setGeometry(QRect(30, 160, 121, 31))
         self.dateEdit.setStyleSheet(u"color: rgba(8, 8, 8, 0.66);")
+        self.pushButton = QPushButton(Dialog)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(270, 450, 100, 51))
+        self.pushButton.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 15px;\n"
+"color: #FFE5E5;")
+        self.label_10 = QLabel(Dialog)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setGeometry(QRect(30, 430, 351, 16))
+        self.label_10.setStyleSheet(u"background-color: none;\n"
+"font-size: 12pt;\n"
+"color: rgba(8, 8, 8, 0.66);")
+        self.lineEdit_7 = QLineEdit(Dialog)
+        self.lineEdit_7.setObjectName(u"lineEdit_7")
+        self.lineEdit_7.setGeometry(QRect(30, 450, 221, 51))
+        self.lineEdit_7.setStyleSheet(u"background-color: rgba(8, 8, 8, 0.66);\n"
+"padding: 10px 20px;\n"
+"border-radius: 10px;\n"
+"border: none;")
+        self.label_11 = QLabel(Dialog)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setGeometry(QRect(30, 500, 351, 16))
+        self.label_11.setStyleSheet(u"background-color: none;\n"
+"font-size: 12pt;\n"
+"color: rgba(255, 8, 8, 0.66);")
 
         self.retranslateUi(Dialog)
 
@@ -123,5 +149,9 @@ class Ui_Dialog(object):
         self.lineEdit_3.setText("")
         self.label_5.setText(QCoreApplication.translate("Dialog", u"id \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u044f", None))
         self.label_2.setText(QCoreApplication.translate("Dialog", u"\u0414\u0430\u0442\u0430 \u043d\u0430\u0445\u043e\u0436\u0434\u0435\u043d\u0438\u044f", None))
+        self.pushButton.setText(QCoreApplication.translate("Dialog", u"\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c", None))
+        self.label_10.setText(QCoreApplication.translate("Dialog", u"\u0414\u043b\u044f \u041e\u0411\u041d\u041e\u0412\u041b\u0415\u041d\u0418\u042f \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u0438 \u0432\u0432\u0435\u0434\u0438\u0442\u0435 id \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u044f", None))
+        self.lineEdit_7.setText("")
+        self.label_11.setText(QCoreApplication.translate("Dialog", u"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 id \u0434\u043b\u044f \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", None))
     # retranslateUi
 

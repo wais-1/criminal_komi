@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1000, 600)
+        MainWindow.resize(1000, 650)
         MainWindow.setStyleSheet(u"background: qlineargradient(\n"
 "    x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "    stop: 0.09 #6E0204,\n"
@@ -116,8 +116,36 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
+        "background-color: transparent;\n")
+        self.scrollArea.setStyleSheet(u"border: none;\n"
+        "background-color: transparent;\n")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 559, 459))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.pushButton_11 = QPushButton(self.centralwidget)
+        self.pushButton_11.setObjectName(u"pushButton_11")
+        self.pushButton_11.setGeometry(QRect(20, 400, 191, 41))
+        self.pushButton_11.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_11.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+        self.pushButton_12 = QPushButton(self.centralwidget)
+        self.pushButton_12.setObjectName(u"pushButton_12")
+        self.pushButton_12.setGeometry(QRect(20, 450, 191, 41))
+        self.pushButton_12.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_12.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+        self.pushButton_13 = QPushButton(self.centralwidget)
+        self.pushButton_13.setObjectName(u"pushButton_13")
+        self.pushButton_13.setGeometry(QRect(20, 500, 191, 41))
+        self.pushButton_13.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_13.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -125,10 +153,6 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
-        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
-"background-color: transparent;\n")
-        self.scrollArea.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
@@ -148,5 +172,8 @@ class Ui_MainWindow(object):
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u0427\u0442\u043e \u0432\u044b \u0445\u043e\u0442\u0438\u0442\u0435 \u043d\u0430\u0439\u0442\u0438?", None))
         self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.pushButton_10.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043c\u0435\u0441\u0442\u043e", None))
+        self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0442\u0435\u0440\u043f\u0435\u0432\u0448\u0435\u0433\u043e", None))
+        self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
+        self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
     # retranslateUi
 
