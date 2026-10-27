@@ -91,6 +91,9 @@ def get_crime_by_id(crime_id):
     except Exception as e:
         print(f"error: {e}")
         return None
+    finally:
+        if conn:
+            conn.close()
 
 def get_suspect_by_id(crime_id):
     try:
@@ -111,6 +114,9 @@ def get_suspect_by_id(crime_id):
     except Exception as e:
         print(f"error: {e}")
         return None
+    finally:
+        if conn:
+            conn.close()
 
 def get_clue_by_id(crime_id):
     try:
@@ -131,6 +137,9 @@ def get_clue_by_id(crime_id):
     except Exception as e:
         print(f"error: {e}")
         return None
+    finally:
+        if conn:
+            conn.close()
 
 def get_case_by_id(crime_id):
     try:
@@ -151,6 +160,9 @@ def get_case_by_id(crime_id):
     except Exception as e:
         print(f"error: {e}")
         return None
+    finally:
+        if conn:
+            conn.close()
 
 #получение enum для отображения в окнах добавления и редактирования
 def get_crime_status():

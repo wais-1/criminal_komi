@@ -710,21 +710,21 @@ def load_crime_window(crime_id):
     print("Полученный ID:", crime_id)
     print("Результат запроса:", clues)
 
-    if crimes is None:
-        print("преступление не найдено")
-        return
+    # if crimes is None:
+    #     print("преступление не найдено")
+    #     return
 
-    if suspect is None:
-        print("преступник не найдено")
-        return
+    # if suspect is None:
+    #     print("преступник не найдено")
+    #     return
 
-    if clues is None:
-        print("clue не найдено")
-        return
+    # if clues is None:
+    #     print("clue не найдено")
+    #     return
 
-    if cases is None:
-        print("case не найдено")
-        return
+    # if cases is None:
+    #     print("case не найдено")
+    #     return
 
     crime_ui.lbl_fullname.setText(str(suspect[1] or ""))
     crime_ui.lbl_date_birth.setText(str(suspect[2] or ""))
