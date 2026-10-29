@@ -43,6 +43,7 @@ def open_admin_window():
     admin_ui.pushButton_11.clicked.connect(open_add_victim)
     admin_ui.pushButton_12.clicked.connect(open_add_witness)
     admin_ui.pushButton_13.clicked.connect(open_suspect_crime)
+    
 
     load_crime_card(admin_ui, "admin")
     admin_window.show()
@@ -68,6 +69,16 @@ def open_investigator_window():
     investigator_ui.setupUi(investigator_window)
 
     investigator_ui.btn_filters.clicked.connect(open_filters_dialog)
+    investigator_ui.btn_add_crime.clicked.connect(open_add_crime)
+    investigator_ui.btn_add_criminal_case.clicked.connect(open_add_case)
+    investigator_ui.btn_add_protocol.clicked.connect(open_add_record)
+    investigator_ui.btn_add_murder.clicked.connect(open_add_suspect)
+    investigator_ui.btn_add_clue.clicked.connect(open_add_clue)
+    investigator_ui.pushButton_10.clicked.connect(open_add_location)
+    investigator_ui.pushButton_11.clicked.connect(open_add_victim)
+    investigator_ui.pushButton_12.clicked.connect(open_add_witness)
+    investigator_ui.pushButton_13.clicked.connect(open_suspect_crime)
+
     load_crime_card(investigator_ui, "investigator")
     investigator_window.show()
 
@@ -631,18 +642,19 @@ def open_crime_window(crime_id):
     crime_ui = CrimeWindow()
     crime_ui.setupUi(crime_window)
 
-    crime_ui.btn_read_protocol.clicked.connect(open_protocol_window)
+    crime_ui.btn_read_protocol.clicked.connect(lambda: open_protocol_window(crime_id))
     load_crime_window(crime_id)
     crime_window.show()
 
 #окно протокола допроса
-def open_protocol_window():
+def open_protocol_window(crime_id):
     global protocol_window, protocol_ui
         
     protocol_window = QMainWindow()
     protocol_ui = ProtocolWindow()
     protocol_ui.setupUi(protocol_window)
 
+    load_record_window(crime_id)
     protocol_window.show()
 
 #отображение карточки преступления
@@ -672,6 +684,8 @@ def load_crime_card(window, role):
         crime_card_ui.setupUi(crime_card_window)
         crime_id = crime[0]
 
+        crime_card_ui.btn_delete.clicked.connect(lambda checked=False, cid=crime_id, card=crime_card_window: delete_crime(cid, card))
+
         crime_card_ui.btn_read.clicked.connect(lambda checked=False, cid=crime_id: open_crime_window(cid))
 
         crime_card_ui.lbl_name.setText(str(crime[1] or ""))
@@ -687,15 +701,12 @@ def load_crime_card(window, role):
 
         if role == "admin":
             crime_card_ui.btn_delete.setVisible(True)
-            crime_card_ui.btn_edit.setVisible(True)
 
         elif role == "user":
             crime_card_ui.btn_delete.setVisible(False)
-            crime_card_ui.btn_edit.setVisible(False)
 
         elif role == "investigator":
             crime_card_ui.btn_delete.setVisible(False)
-            crime_card_ui.btn_edit.setVisible(True)
 
     layout.addStretch()
     scroll_area.setWidgetResizable(True)
@@ -706,25 +717,6 @@ def load_crime_window(crime_id):
     crimes = dbconnect.get_crime_by_id(crime_id)
     clues = dbconnect.get_clue_by_id(crime_id)
     cases = dbconnect.get_case_by_id(crime_id)
-
-    print("Полученный ID:", crime_id)
-    print("Результат запроса:", clues)
-
-    # if crimes is None:
-    #     print("преступление не найдено")
-    #     return
-
-    # if suspect is None:
-    #     print("преступник не найдено")
-    #     return
-
-    # if clues is None:
-    #     print("clue не найдено")
-    #     return
-
-    # if cases is None:
-    #     print("case не найдено")
-    #     return
 
     crime_ui.lbl_fullname.setText(str(suspect[1] or ""))
     crime_ui.lbl_date_birth.setText(str(suspect[2] or ""))
@@ -751,25 +743,61 @@ def load_crime_window(crime_id):
     crime_ui.lbl_date_open.setText(str(cases[3] or ""))
     crime_ui.lbl_date_close.setText(str(cases[4] or "Не закрыто"))
 
+def load_record_window(crime_id):
+    record = dbconnect.get_record_by_crime_id(crime_id)
+    print("Полученная запись протокола:", record)
+    print("ID преступления:", crime_id)
+    if record is not None:
+        protocol_ui.lbl_date.setText(str(record[4] or "дата не указана"))
+        protocol_ui.lbl_descr.setText(str(record[1] or "текст не указан"))
+        # TODO: загружать аудио/видео в лейбл протокола допроса
+        # protocol_ui.label_15.setText(str(record[2] or record[3] or "аудио/видео файл не приложен"))
+        protocol_ui.lbl_full_name.setText(str(record[8] or "фио не указано"))
+        protocol_ui.lbl_status.setText(str(record[11] or "нет статуса"))
+        protocol_ui.lbl_date_birth.setText(str(record[9] or "не указана"))
+        protocol_ui.lbl_degree.setText(str(record[10] or "не указана"))
+        protocol_ui.lbl_witness_name.setText(str(record[5] or "фио не указано"))
+        protocol_ui.lbl_level.setText(str(record[6] or "не указан"))
+        protocol_ui.lbl_programm.setText(str(record[7] or "не указан"))
+
+
+
 #авторизация пользователя
 def authorization():
     login = login_ui.lineEdit.text()
     password = login_ui.lineEdit_2.text()
 
-    role = check_login(login, password)
+    user = check_login(login, password)
 
-    if role:
+    if user:
         login_window.close()
 
-        if role[0] == 'Администратор':
-            open_admin_window()
+        user_id = user[0]
+        username = user[1]
+        role = user[2]
 
-        elif role[0] == 'user':
+        if role == "Администратор":
+            open_admin_window()
+            admin_ui.label_5.setText(username)
+
+        elif role == "user":
             open_user_window()
-        elif role[0] == 'Следователь':
+            user_ui.lbl_username.setText(username)
+
+        elif role == "Следователь":
             open_investigator_window()
+            investigator_ui.lbl_username.setText(username)
+
+        else:
+            QMessageBox.warning(
+                None,
+                "Ошибка",
+                f"Неизвестная роль пользователя: {role}"
+            )
+            login_window.show()
+
     else:
-        print('no such user')
+        print("no such user")
         login_ui.label_6.setVisible(True)
         login_ui.label_5.setVisible(True)
 
@@ -777,14 +805,34 @@ def authorization():
 def check_login(loginValue, passValue):
     conn = dbconnect.get_db_connection()
 
-    with conn.cursor() as cursor:
-        cursor.execute("""SELECT role.name FROM user
-                            JOIN role on user.id_role = role.id
-                            where user.login = %s AND user.password = %s""", (loginValue, passValue))
-        role = cursor.fetchone()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT user.id, user.login, role.name
+                FROM user
+                JOIN role ON user.id_role = role.id
+                WHERE user.login = %s AND user.password = %s
+            """, (loginValue, passValue))
 
-        conn.close()
-        return role
+            user = cursor.fetchone()
+
+        if user:
+            print("ID:", user[0])
+            print("Логин:", user[1])
+            print("Роль:", user[2])
+
+            return user
+
+        return None
+
+    except Exception as e:
+        print(f"error: {e}")
+        return None
+
+    finally:
+        if conn:
+            conn.close()
+    
 
 #окно регистрации пользователя
 def open_registration_window():
@@ -812,6 +860,33 @@ def registration():
         open_user_window()
     else:
         print('error')
+
+def delete_crime(crime_id, card):
+    answer = QMessageBox.question(
+        admin_window,
+        "Удаление преступления",
+        "Удалить преступление и связанные с ним данные?",
+        QMessageBox.StandardButton.Yes |
+        QMessageBox.StandardButton.No
+    )
+
+    if answer != QMessageBox.StandardButton.Yes:
+        return
+
+    if dbconnect.delete_crime(crime_id):
+        card.deleteLater()
+        QMessageBox.information(
+            admin_window,
+            "Удаление",
+            "Преступление успешно удалено."
+        )
+    else:
+        QMessageBox.critical(
+            admin_window,
+            "Ошибка",
+            "Не удалось удалить преступление и связанные данные."
+        )
+
 
 
 if __name__ == '__main__':

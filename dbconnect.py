@@ -32,45 +32,18 @@ def get_crime_card():
     except Exception as e:
         print(f'error: {e}')
 
-# def get_suspect():
-#     try:
-#         conn = get_db_connection()
-#         with conn.cursor() as cursor:
-#             cursor.execute("select * from suspect")
-#             suspect = cursor.fetchone()
-#         return suspect
-#     except Exception as e:
-#         print(f'error: {e}')
-
-# def get_crime():
-#     try:
-#         conn = get_db_connection()
-#         with conn.cursor() as cursor:
-#             cursor.execute("select id, name, date, status, type, security_level, description from crime")
-#             crimes = cursor.fetchall()
-#         return crimes
-#     except Exception as e:
-#         print(f'error: {e}')
-
-# def get_clue():
-#     try:
-#         conn = get_db_connection()
-#         with conn.cursor() as cursor:
-#             cursor.execute("select name, date, type, description from clue")
-#             clues = cursor.fetchall()
-#         return clues
-#     except Exception as e:
-#         print(f'error: {e}')
-
-# def get_case():
-#     try:
-#         conn = get_db_connection()
-#         with conn.cursor() as cursor:
-#             cursor.execute("select case_number, article, opening_date, closing_date from criminal_case")
-#             cases = cursor.fetchall()
-#         return cases
-#     except Exception as e:
-#         print(f'error: {e}')
+def get_username(user_id):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select login from user where id = $s", (user_id,))
+            user = cursor.fetchone()
+        return user[0]
+    except Exception as e:
+        print(f'error: {e}')
+    finally:
+        if conn:
+            conn.close()
 
 #получение данных по id для корректного открытия окна преступления через карточку
 def get_crime_by_id(crime_id):
@@ -147,7 +120,7 @@ def get_case_by_id(crime_id):
 
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT criminal_case.id, criminal_case.case_number, criminal_case.opening_date, criminal_case.closing_date, criminal_case.article
+                SELECT criminal_case.id, criminal_case.case_number, criminal_case.opening_date, criminal_case.closing_date, criminal_case.article, criminal_case.id_interrogation_record
                 FROM criminal_case
                 JOIN crime ON crime.id=criminal_case.id_crime
                 WHERE crime.id = %s
@@ -160,6 +133,49 @@ def get_case_by_id(crime_id):
     except Exception as e:
         print(f"error: {e}")
         return None
+    finally:
+        if conn:
+            conn.close()
+
+def get_record_by_crime_id(crime_id):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    interrogation_record.id,
+                    interrogation_record.text,
+                    interrogation_record.audio_url,
+                    interrogation_record.video_url,
+                    interrogation_record.date,
+                    witness.full_name,
+                    witness.witness_reliability_levels,
+                    witness.program_stages,
+                    victim.full_name,
+                    victim.birth_date,
+                    victim.severity,
+                    victim.protection_statuses
+                FROM criminal_case
+                JOIN crime
+                    ON crime.id = criminal_case.id_crime
+                JOIN interrogation_record
+                    ON interrogation_record.id = criminal_case.id_interrogation_record
+                LEFT JOIN witness
+                    ON witness.id = interrogation_record.id_witness
+                LEFT JOIN victim
+                    ON victim.id = interrogation_record.id_victim
+                WHERE crime.id = %s
+            """, (crime_id,))
+
+            record = cursor.fetchone()
+
+        return record
+
+    except Exception as e:
+        print(f"error: {e}")
+        return None
+
     finally:
         if conn:
             conn.close()
@@ -617,3 +633,70 @@ def update_location(location_id, coordinates, address, district, object_type):
     except Exception as e:
         print(f'error: {e}')
         return False
+
+#удаление карточки и все связанные с ней данные
+def delete_crime(crime_id):
+    try:
+        conn = get_db_connection()
+        conn.begin()
+
+        with conn.cursor() as cursor:
+            # Получаем ID связанных уголовных дел и протоколов
+            cursor.execute("""
+                SELECT id, id_interrogation_record
+                FROM criminal_case
+                WHERE id_crime = %s
+            """, (crime_id,))
+
+            cases = cursor.fetchall()
+
+            # Удаляем связь между преступлением и подозреваемым
+            cursor.execute("""
+                DELETE FROM suspect_crime
+                WHERE id_crime = %s
+            """, (crime_id,))
+
+            # Удаляем улики, связанные с преступлением
+            cursor.execute("""
+                DELETE FROM clue
+                WHERE id_crime = %s
+            """, (crime_id,))
+
+            # Удаляем уголовные дела
+            cursor.execute("""
+                DELETE FROM criminal_case
+                WHERE id_crime = %s
+            """, (crime_id,))
+
+            # Удаляем протоколы, если они больше нигде не используются
+            for case in cases:
+                record_id = case[1]
+
+                if record_id is not None:
+                    cursor.execute("""
+                        SELECT COUNT(*)
+                        FROM criminal_case
+                        WHERE id_interrogation_record = %s
+                    """, (record_id,))
+
+                    count = cursor.fetchone()[0]
+
+                    if count == 0:
+                        cursor.execute("""
+                            DELETE FROM interrogation_record
+                            WHERE id = %s
+                        """, (record_id,))
+
+        conn.commit()
+        return True
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+
+        print(f"error: {e}")
+        return False
+
+    finally:
+        if conn:
+            conn.close()

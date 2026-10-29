@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -77,22 +77,6 @@ font-size: 16pt;</string>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QPushButton" name="btn_edit">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border-radius: 10px;
-background-color: #35451A;
-padding: 7px;
-color: #FFE5E5;</string>
-            </property>
-            <property name="text">
-             <string>Редактировать</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QPushButton" name="btn_delete">
             <property name="cursor">
