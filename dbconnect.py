@@ -26,7 +26,7 @@ def get_crime_card():
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            cursor.execute("select id, name, mini_description from crime order by name")
+            cursor.execute("select id, name, mini_description from crime where is_deleted = 0 order by name")
             crimes = cursor.fetchall()
         return crimes
     except Exception as e:
@@ -634,58 +634,36 @@ def update_location(location_id, coordinates, address, district, object_type):
         print(f'error: {e}')
         return False
 
-#удаление карточки и все связанные с ней данные
+#удаление карточки и все связанные с ней данные перманентно
 def delete_crime(crime_id):
     try:
         conn = get_db_connection()
         conn.begin()
 
         with conn.cursor() as cursor:
-            # Получаем ID связанных уголовных дел и протоколов
-            cursor.execute("""
-                SELECT id, id_interrogation_record
-                FROM criminal_case
-                WHERE id_crime = %s
-            """, (crime_id,))
+            cursor.execute("""SELECT id, id_interrogation_record FROM criminal_case WHERE id_crime = %s""", (crime_id,))
 
             cases = cursor.fetchall()
 
-            # Удаляем связь между преступлением и подозреваемым
-            cursor.execute("""
-                DELETE FROM suspect_crime
-                WHERE id_crime = %s
-            """, (crime_id,))
+            cursor.execute("""DELETE FROM suspect_crime WHERE id_crime = %s""", (crime_id,))
 
-            # Удаляем улики, связанные с преступлением
-            cursor.execute("""
-                DELETE FROM clue
-                WHERE id_crime = %s
-            """, (crime_id,))
+            cursor.execute("""DELETE FROM clue WHERE id_crime = %s""", (crime_id,))
 
-            # Удаляем уголовные дела
-            cursor.execute("""
-                DELETE FROM criminal_case
-                WHERE id_crime = %s
-            """, (crime_id,))
+            cursor.execute("""DELETE FROM criminal_case WHERE id_crime = %s""", (crime_id,))
 
-            # Удаляем протоколы, если они больше нигде не используются
+            cursor.execute("""DELETE FROM crime WHERE id = %s""", (crime_id,))
+
             for case in cases:
                 record_id = case[1]
 
                 if record_id is not None:
-                    cursor.execute("""
-                        SELECT COUNT(*)
-                        FROM criminal_case
-                        WHERE id_interrogation_record = %s
-                    """, (record_id,))
+                    cursor.execute("""SELECT COUNT(*) FROM criminal_case WHERE id_interrogation_record = %s""", (record_id,))
 
                     count = cursor.fetchone()[0]
 
                     if count == 0:
                         cursor.execute("""
-                            DELETE FROM interrogation_record
-                            WHERE id = %s
-                        """, (record_id,))
+                            DELETE FROM interrogation_record WHERE id = %s""", (record_id,))
 
         conn.commit()
         return True
@@ -700,3 +678,123 @@ def delete_crime(crime_id):
     finally:
         if conn:
             conn.close()
+
+# мягкое удаление в корзину
+def soft_delete(crime_id):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select id from crime where id = %s and is_deleted = 0", (crime_id, ))
+            crime = cursor.fetchone()
+            if crime is None:
+                conn.rollback()
+                return False
+            
+            cursor.execute("select id_interrogation_record from criminal_case where id_crime = %s and is_deleted = 0", (crime_id))
+            records = cursor.fetchall()
+
+            cursor.execute("update suspect_crime set is_deleted = 1, deleted_at = NOW(), deleted_by_crime_id = %s where id_crime = %s and is_deleted = 0",
+                           (crime_id, crime_id))
+
+            cursor.execute("update clue set is_deleted = 1, deleted_at = NOW(), deleted_by_crime_id = %s where id_crime = %s and is_deleted = 0",
+                                       (crime_id, crime_id))
+
+            cursor.execute("update criminal_case set is_deleted = 1, deleted_at = NOW(), deleted_by_crime_id = %s where id_crime = %s and is_deleted = 0",
+                                                   (crime_id, crime_id))
+            cursor.execute("""
+                            UPDATE crime_location
+                            JOIN crime ON crime.id_crime_location = crime_location.id
+                            SET crime_location.is_deleted = 1,
+                                crime_location.deleted_at = NOW(),
+                                crime_location.deleted_by_crime_id = %s
+                            WHERE crime.id = %s
+                            AND crime_location.is_deleted = 0
+                        """, (crime_id, crime_id))
+            cursor.execute("update crime set is_deleted = 1, deleted_at = NOW() where id = %s and is_deleted = 0",
+                                                               (crime_id))
+
+            for record in records:
+                record_id = record[0]
+
+                if record_id is None:
+                    continue
+                cursor.execute("select count(*) from criminal_case where id_interrogation_record = %s and is_deleted = 0 and id_crime != %s",
+                               (record_id, crime_id))
+                count = cursor.fetchone()[0]
+
+                if count == 0:
+                    cursor.execute("update interrogation_record set is_deleted = 1, deleted_at = NOW(), deleted_by_crime_id = %s where id = %s and is_deleted = 0",
+                                                                       (crime_id, record_id))
+        conn.commit()
+        return True
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f'error: {e}')
+    finally:
+        if conn:
+            conn.close()
+
+def get_cards_in_trash():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select id, name, mini_description from crime where is_deleted = 1 order by deleted_at desc")
+            return cursor.fetchall()
+    except Exception as e:
+        print(f'error: {e}')
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def restore_crime_from_trash(crime_id):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select id from crime where id = %s and is_deleted = 1", (crime_id, ))
+            crime = cursor.fetchone()
+            if crime is None:
+                conn.rollback()
+                return False
+            
+            cursor.execute("select id_interrogation_record from criminal_case where id_crime = %s and is_deleted = 1 AND deleted_by_crime_id = %s", (crime_id, crime_id))
+            records = cursor.fetchall()
+
+            cursor.execute("update suspect_crime set is_deleted = 0, deleted_at = null, deleted_by_crime_id = null where id_crime = %s and is_deleted = 1 AND deleted_by_crime_id = %s",
+                            (crime_id, crime_id))
+
+            cursor.execute("update clue set is_deleted = 0, deleted_at = null, deleted_by_crime_id = null where id_crime = %s and is_deleted = 1 AND deleted_by_crime_id = %s",
+                                        (crime_id, crime_id))
+
+            cursor.execute("update criminal_case set is_deleted = 0, deleted_at = null, deleted_by_crime_id = null where id_crime = %s and is_deleted = 1 AND deleted_by_crime_id = %s",
+                                                    (crime_id, crime_id))
+            for record in records:
+                record_id = record[0]
+                if record_id is not None:
+                    cursor.execute("update interrogation_record set is_deleted = 0, deleted_at = null, deleted_by_crime_id = null where id = %s and is_deleted = 1 AND deleted_by_crime_id = %s",
+                                                                                            (record_id, crime_id))
+                    
+            cursor.execute("""
+                            UPDATE crime_location
+                            JOIN crime ON crime.id_crime_location = crime_location.id
+                            SET crime_location.is_deleted = 0,
+                                crime_location.deleted_at = null,
+                                crime_location.deleted_by_crime_id = null
+                            WHERE crime.id = %s
+                            AND crime_location.is_deleted = 1
+                            AND deleted_by_crime_id = %s
+                        """, (crime_id, crime_id))
+            cursor.execute("update crime set is_deleted = 0, deleted_at = null where id = %s and is_deleted = 1",
+                                                                (crime_id, ))
+        conn.commit()
+        return True
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f'error: {e}')
+    finally:
+        if conn:
+            conn.close()
+
+        

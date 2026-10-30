@@ -24,6 +24,18 @@ from UI.ProtocolWindow import Ui_MainWindow as ProtocolWindow
 from UI.AddVictim import Ui_Dialog as AddVictim
 from UI.AddWitness import Ui_Dialog as AddWitness
 from UI.AddSuspectCrime import Ui_Dialog as AddSuspectCrime
+from UI.CartWindow import Ui_MainWindow as CartWindow
+
+def open_cart_window():
+    global cart_window, cart_ui
+    
+    cart_window = QMainWindow()
+    cart_ui = CartWindow()
+    cart_ui.setupUi(cart_window)
+
+    load_crime_card_in_trash(cart_ui, "cart")
+
+    cart_window.show()
 
 #открытие окна админа
 def open_admin_window():
@@ -43,6 +55,7 @@ def open_admin_window():
     admin_ui.pushButton_11.clicked.connect(open_add_victim)
     admin_ui.pushButton_12.clicked.connect(open_add_witness)
     admin_ui.pushButton_13.clicked.connect(open_suspect_crime)
+    admin_ui.btn_cart.clicked.connect(open_cart_window)
     
 
     load_crime_card(admin_ui, "admin")
@@ -657,6 +670,63 @@ def open_protocol_window(crime_id):
     load_record_window(crime_id)
     protocol_window.show()
 
+def soft_delete_card(crime_id):
+    answer = QMessageBox.question(
+            admin_window,
+            "Удаление преступления",
+            "Удалить преступление и связанные с ним данные?",
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+    
+    if answer != QMessageBox.StandardButton.Yes:
+        return
+
+    if dbconnect.soft_delete(crime_id):
+        # card.deleteLater()
+        QMessageBox.information(
+            admin_window,
+            "Удаление",
+            "Преступление успешно удалено."
+        )
+        load_crime_card(admin_ui, "admin")
+    else:
+        QMessageBox.critical(
+            admin_window,
+            "Ошибка",
+            "Не удалось удалить преступление и связанные данные."
+        )
+
+def restore_crime_card(crime_id):
+    print("ID для восстановления:", crime_id)
+    # print("Результат восстановления:", result)
+    answer = QMessageBox.question(
+            admin_window,
+            "восстановление преступления",
+            "восстановить преступление и связанные с ним данные?",
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+    
+    if answer != QMessageBox.StandardButton.Yes:
+        return
+
+    if dbconnect.restore_crime_from_trash(crime_id):
+        # card.deleteLater()
+        QMessageBox.information(
+            admin_window,
+            "восстановление",
+            "Преступление успешно восстановлено."
+        )
+        load_crime_card(admin_ui, "admin")
+    else:
+        QMessageBox.critical(
+            admin_window,
+            "Ошибка",
+            "Не удалось восстановить преступление и связанные данные."
+        )
+
+
 #отображение карточки преступления
 def load_crime_card(window, role):
     global crime_card_window, card_crime_ui
@@ -678,13 +748,20 @@ def load_crime_card(window, role):
     layout.setSpacing(10)
     layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
+    while layout.count():
+        item = layout.takeAt(0)
+        widget = item.widget()
+
+        if widget is not None:
+            widget.deleteLater()
+
     for crime in crime_card:
         crime_card_window = QWidget()
         crime_card_ui = CrimeCard()
         crime_card_ui.setupUi(crime_card_window)
         crime_id = crime[0]
 
-        crime_card_ui.btn_delete.clicked.connect(lambda checked=False, cid=crime_id, card=crime_card_window: delete_crime(cid, card))
+        crime_card_ui.btn_delete.clicked.connect(lambda checked=False, cid=crime_id: soft_delete_card(cid))
 
         crime_card_ui.btn_read.clicked.connect(lambda checked=False, cid=crime_id: open_crime_window(cid))
 
@@ -698,18 +775,85 @@ def load_crime_card(window, role):
         )
 
         layout.addWidget(crime_card_window)
+        crime_card_ui.btn_delete.setVisible(False)
+        crime_card_ui.btn_delete_2.setVisible(False)
+        crime_card_ui.btn_delete_3.setVisible(False)
+        crime_card_ui.btn_read.setVisible(True)
 
         if role == "admin":
             crime_card_ui.btn_delete.setVisible(True)
 
         elif role == "user":
-            crime_card_ui.btn_delete.setVisible(False)
+            pass
 
         elif role == "investigator":
-            crime_card_ui.btn_delete.setVisible(False)
+            pass
 
-    layout.addStretch()
-    scroll_area.setWidgetResizable(True)
+        elif role == "cart":
+            crime_card_ui.btn_delete_2.setVisible(True)
+            crime_card_ui.btn_delete_3.setVisible(True)
+            crime_card_ui.btn_read.setVisible(False)
+
+            layout.addStretch()
+            scroll_area.setWidgetResizable(True)
+
+#отображение карточки в корзине
+def load_crime_card_in_trash(window, role):
+    # global crime_card_window, card_crime_ui
+    crime_card = dbconnect.get_cards_in_trash()
+
+    scroll_area = window.scrollArea
+
+    if scroll_area is None:
+        print('скролл не найден')
+        return
+
+    container = window.scrollAreaWidgetContents
+
+    layout = container.layout()
+    if layout is None:
+        layout = QVBoxLayout(container)
+
+    layout.setContentsMargins(10, 10, 10, 10)
+    layout.setSpacing(10)
+    layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+    while layout.count():
+        item = layout.takeAt(0)
+        widget = item.widget()
+
+        if widget is not None:
+            widget.deleteLater()
+
+    for crime in crime_card:
+        crime_card_window = QWidget()
+        crime_card_ui = CrimeCard()
+        crime_card_ui.setupUi(crime_card_window)
+        crime_id = crime[0]
+
+        crime_card_ui.btn_delete.setVisible(False)
+        crime_card_ui.btn_read.setVisible(False)
+    
+        if role == "cart":
+            crime_card_ui.btn_delete_2.setVisible(True)
+            crime_card_ui.btn_delete_3.setVisible(True)
+    
+        layout.addStretch()
+        scroll_area.setWidgetResizable(True)
+
+        crime_card_ui.lbl_name.setText(str(crime[1] or ""))
+        crime_card_ui.lbl_mini_descr.setText(str(crime[2] or ""))
+        crime_card_ui.btn_delete_3.clicked.connect(lambda checked=False, cid=crime_id, card=crime_card_window: delete_crime(cid, card))
+        crime_card_ui.btn_delete_2.clicked.connect(lambda checked=False, cid=crime_id: restore_crime_card(cid))
+
+        crime_card_window.setMinimumHeight(200)
+        crime_card_window.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Fixed
+        )
+
+        layout.addWidget(crime_card_window)
+
 
 #отображение данных в окне преступления
 def load_crime_window(crime_id):

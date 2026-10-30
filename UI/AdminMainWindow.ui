@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1000</width>
     <height>650</height>
    </rect>
   </property>
@@ -245,9 +245,13 @@ color: #FFE5E5;</string>
      <rect>
       <x>230</x>
       <y>70</y>
-      <width>561</width>
-      <height>461</height>
+      <width>700</width>
+      <height>500</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: transparent;
+border: none;</string>
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
@@ -260,9 +264,13 @@ color: #FFE5E5;</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>559</width>
-       <height>459</height>
+       <width>700</width>
+       <height>500</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: transparent;
+border: none;</string>
      </property>
     </widget>
    </widget>
@@ -332,13 +340,45 @@ color: #FFE5E5;</string>
      <string>привязать преступление</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_cart">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>10</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LayoutDirection::RightToLeft</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 5px;
+color: #FFE5E5;</string>
+    </property>
+    <property name="text">
+     <string>Корзина</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1000</width>
      <height>33</height>
     </rect>
    </property>

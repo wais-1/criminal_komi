@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>561</width>
+    <width>620</width>
     <height>200</height>
    </rect>
   </property>
@@ -77,6 +77,38 @@ font-size: 16pt;</string>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="btn_delete_3">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius: 10px;
+background-color: #9C0000;
+padding: 7px;
+color: #FFE5E5;</string>
+            </property>
+            <property name="text">
+             <string>Удалить навсегда</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_delete_2">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius: 10px;
+background-color: green;
+padding: 7px;
+color: #FFE5E5;</string>
+            </property>
+            <property name="text">
+             <string>Восстановить</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="btn_delete">
             <property name="cursor">

@@ -22,7 +22,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(561, 200)
+        Form.resize(620, 200)
         self.layoutWidget = QWidget(Form)
         self.layoutWidget.setObjectName(u"layoutWidget")
         self.layoutWidget.setGeometry(QRect(10, 30, 541, 153))
@@ -67,6 +67,26 @@ class Ui_Form(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.btn_delete_3 = QPushButton(self.layoutWidget)
+        self.btn_delete_3.setObjectName(u"btn_delete_3")
+        self.btn_delete_3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_delete_3.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #9C0000;\n"
+"padding: 7px;\n"
+"color: #FFE5E5;")
+
+        self.horizontalLayout.addWidget(self.btn_delete_3)
+
+        self.btn_delete_2 = QPushButton(self.layoutWidget)
+        self.btn_delete_2.setObjectName(u"btn_delete_2")
+        self.btn_delete_2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_delete_2.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: green;\n"
+"padding: 7px;\n"
+"color: #FFE5E5;")
+
+        self.horizontalLayout.addWidget(self.btn_delete_2)
+
         self.btn_delete = QPushButton(self.layoutWidget)
         self.btn_delete.setObjectName(u"btn_delete")
         self.btn_delete.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -107,6 +127,8 @@ class Ui_Form(object):
         self.lbl_img.setText("")
         self.lbl_name.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438", None))
         self.lbl_mini_descr.setText(QCoreApplication.translate("Form", u"\u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u041c\u0430\u043b\u0435\u043d\u044c\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435", None))
+        self.btn_delete_3.setText(QCoreApplication.translate("Form", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u043d\u0430\u0432\u0441\u0435\u0433\u0434\u0430", None))
+        self.btn_delete_2.setText(QCoreApplication.translate("Form", u"\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c", None))
         self.btn_delete.setText(QCoreApplication.translate("Form", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c", None))
         self.btn_read.setText(QCoreApplication.translate("Form", u"\u0427\u0438\u0442\u0430\u0442\u044c", None))
     # retranslateUi

@@ -111,16 +111,16 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.scrollArea = QScrollArea(self.centralwidget)
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setGeometry(QRect(230, 70, 700, 461))
+        self.scrollArea.setGeometry(QRect(230, 70, 700, 500))
+        self.scrollArea.setStyleSheet(u"background-color: transparent;\n"
+"border: none;")
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
-        self.scrollArea.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 559, 459))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 700, 500))
+        self.scrollAreaWidgetContents.setStyleSheet(u"background-color: transparent;\n"
+"border: none;")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.pushButton_11 = QPushButton(self.centralwidget)
         self.pushButton_11.setObjectName(u"pushButton_11")
@@ -146,10 +146,21 @@ class Ui_MainWindow(object):
 "background-color: #3D0A0A;\n"
 "padding: 5px;\n"
 "color: #FFE5E5;")
+        self.btn_cart = QPushButton(self.centralwidget)
+        self.btn_cart.setObjectName(u"btn_cart")
+        self.btn_cart.setGeometry(QRect(780, 10, 101, 41))
+        self.btn_cart.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_cart.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.btn_cart.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+        self.btn_cart.setIcon(icon)
+        self.btn_cart.setFlat(False)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1000, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -175,5 +186,6 @@ class Ui_MainWindow(object):
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0442\u0435\u0440\u043f\u0435\u0432\u0448\u0435\u0433\u043e", None))
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
+        self.btn_cart.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u0440\u0437\u0438\u043d\u0430", None))
     # retranslateUi
 
