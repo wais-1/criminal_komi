@@ -114,7 +114,6 @@ class Ui_MainWindow(object):
         self.scrollArea.setGeometry(QRect(230, 80, 700, 451))
         self.scrollArea.setStyleSheet(u"background-color: transparent;\n"
 "border: none;")
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
@@ -146,6 +145,18 @@ class Ui_MainWindow(object):
 "background-color: #3D0A0A;\n"
 "padding: 5px;\n"
 "color: #FFE5E5;")
+        self.btn_exit = QPushButton(self.centralwidget)
+        self.btn_exit.setObjectName(u"btn_exit")
+        self.btn_exit.setGeometry(QRect(760, 10, 101, 41))
+        self.btn_exit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_exit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.btn_exit.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: none;\n"
+"padding: 5px;\n"
+"color: red;\n"
+"border: 1px solid red;")
+        self.btn_exit.setIcon(icon)
+        self.btn_exit.setFlat(False)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -175,5 +186,6 @@ class Ui_MainWindow(object):
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0442\u0435\u0440\u043f\u0435\u0432\u0448\u0435\u0433\u043e", None))
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
+        self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0439\u0442\u0438", None))
     # retranslateUi
 

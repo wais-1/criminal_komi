@@ -36,7 +36,7 @@ def get_username(user_id):
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            cursor.execute("select login from user where id = $s", (user_id,))
+            cursor.execute("select login from user where id = %s", (user_id,))
             user = cursor.fetchone()
         return user[0]
     except Exception as e:
@@ -342,6 +342,23 @@ def get_suspects():
             cursor.execute("""
                 SELECT id, full_name
                 FROM suspect
+                ORDER BY full_name
+            """)
+
+            return cursor.fetchall()
+
+    except Exception as e:
+        print(f"error: {e}")
+        return None
+
+def get_investigator():
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, full_name
+                FROM investigator
                 ORDER BY full_name
             """)
 
@@ -748,6 +765,7 @@ def get_cards_in_trash():
         if conn:
             conn.close()
 
+#восстановление из корзины
 def restore_crime_from_trash(crime_id):
     try:
         conn = get_db_connection()
@@ -797,4 +815,68 @@ def restore_crime_from_trash(crime_id):
         if conn:
             conn.close()
 
+#фильтрация карточек
+def filtered_data(date_from, date_to, crime_type, district, investigator_id, crime_status, suspect_name, suspect_status):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            query = "select distinct crime.id, crime.name, crime.mini_description from crime where crime.is_deleted = 0"
+            params = []
+
+            if date_from and date_to:
+                query += " and date(crime.date) between %s and %s"
+                params.extend([date_from, date_to])
+
+            if crime_type is not None:
+                query += " and crime.type = %s"
+                params.append(crime_type)
+
+            if district:
+                query += " and exists (select 1 from crime_location cl where cl.id = crime.id_crime_location and cl.district like %s)"
+                params.append(f"%{district}%")
+
+            if investigator_id is not None:
+                query += " and exists (select 1 from criminal_case cc where cc.id_crime = crime.id  and cc.id_investigator = %s and cc.is_deleted = 0)"
+                params.append(investigator_id)
+
+            if crime_status is not None:
+                query += " and crime.status = %s"
+                params.append(crime_status)
+
+            if suspect_name is not None:
+                query += " and exists (select 1 from suspect_crime sc where sc.id_crime = crime.id and sc.id_suspect = %s and sc.is_deleted = 0)"
+                params.append(suspect_name)
+
+            if suspect_status is not None:
+                query += " and exists (select 1 from suspect_crime sc join suspect s on s.id = sc.id_suspect where sc.id_crime = crime.id and sc.is_deleted = 0 and s.status = %s)"
+                params.append(suspect_status)
+
+            query += " order by crime.name"
+            cursor.execute(query, params)
+            return cursor.fetchall()
         
+    except Exception as e:
+        print(f'error: {e}')
+        return []
+
+    finally:
+        if conn:
+            conn.close()
+
+#поиск в живом времени
+def live_search(search_text):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            query = "select id, name, mini_description from crime where is_deleted = 0 and (name like %s or mini_description like %s) order by name"
+            search = f"%{search_text.strip()}%"
+
+            cursor.execute(query, (search, search))
+            return cursor.fetchall()
+    except Exception as e:
+            print(f'error: {e}')
+            return []
+    
+    finally:
+        if conn:
+            conn.close()

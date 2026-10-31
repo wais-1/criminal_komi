@@ -64,12 +64,27 @@ class Ui_MainWindow(object):
         self.scrollArea = QScrollArea(self.centralwidget)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setGeometry(QRect(170, 70, 700, 461))
+        self.scrollArea.setStyleSheet(u"background-color: transparent;\n"
+"border: none;")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 698, 459))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 700, 461))
+        self.scrollAreaWidgetContents.setStyleSheet(u"background-color: transparent;\n"
+"border: none;")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.btn_exit = QPushButton(self.centralwidget)
+        self.btn_exit.setObjectName(u"btn_exit")
+        self.btn_exit.setGeometry(QRect(710, 20, 101, 41))
+        self.btn_exit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_exit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.btn_exit.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: none;\n"
+"padding: 5px;\n"
+"color: red;\n"
+"border: 1px solid red;")
+        self.btn_exit.setIcon(icon)
+        self.btn_exit.setFlat(False)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -78,10 +93,7 @@ class Ui_MainWindow(object):
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
-        self.scrollArea.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
+
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -93,5 +105,6 @@ class Ui_MainWindow(object):
         self.btn_filters.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.lbl_avatar.setText("")
         self.lbl_username.setText(QCoreApplication.translate("MainWindow", u"user", None))
+        self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0439\u0442\u0438", None))
     # retranslateUi
 

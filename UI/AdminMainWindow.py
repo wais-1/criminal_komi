@@ -148,7 +148,7 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.btn_cart = QPushButton(self.centralwidget)
         self.btn_cart.setObjectName(u"btn_cart")
-        self.btn_cart.setGeometry(QRect(780, 10, 101, 41))
+        self.btn_cart.setGeometry(QRect(770, 10, 101, 41))
         self.btn_cart.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_cart.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         self.btn_cart.setStyleSheet(u"border-radius: 10px;\n"
@@ -157,6 +157,18 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.btn_cart.setIcon(icon)
         self.btn_cart.setFlat(False)
+        self.btn_exit = QPushButton(self.centralwidget)
+        self.btn_exit.setObjectName(u"btn_exit")
+        self.btn_exit.setGeometry(QRect(880, 10, 101, 41))
+        self.btn_exit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_exit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.btn_exit.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: none;\n"
+"padding: 5px;\n"
+"color: red;\n"
+"border: 1px solid red;")
+        self.btn_exit.setIcon(icon)
+        self.btn_exit.setFlat(False)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -187,5 +199,6 @@ class Ui_MainWindow(object):
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
         self.btn_cart.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u0440\u0437\u0438\u043d\u0430", None))
+        self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0439\u0442\u0438", None))
     # retranslateUi
 

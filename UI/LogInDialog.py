@@ -23,7 +23,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(400, 380)
+        Dialog.resize(400, 420)
         Dialog.setStyleSheet(u"background: qlineargradient(\n"
 "    x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "    stop: 0.09 #6E0204,\n"
@@ -109,6 +109,14 @@ class Ui_Dialog(object):
 
         self.horizontalLayout.addWidget(self.pushButton_2)
 
+        self.pushButton_3 = QPushButton(Dialog)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setGeometry(QRect(160, 370, 91, 41))
+        self.pushButton_3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_3.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 10px 15px;\n"
+"color: #FFE5E5;")
 
         self.retranslateUi(Dialog)
 
@@ -126,5 +134,6 @@ class Ui_Dialog(object):
         self.label_6.setText(QCoreApplication.translate("Dialog", u"\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u043b\u043e\u0433\u0438\u043d \u0438\u043b\u0438 \u043f\u0430\u0440\u043e\u043b\u044c", None))
         self.label_4.setText(QCoreApplication.translate("Dialog", u"\u0415\u0449\u0435 \u043d\u0435\u0442 \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430?", None))
         self.pushButton_2.setText(QCoreApplication.translate("Dialog", u"\u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f", None))
+        self.pushButton_3.setText(QCoreApplication.translate("Dialog", u"\u041d\u0430\u0437\u0430\u0434", None))
     # retranslateUi
 

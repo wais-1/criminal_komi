@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>720</height>
+    <height>770</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -325,28 +325,6 @@ font-size: 14pt;</string>
     <string>ФИО преступника:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="line_criminal_name">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>580</y>
-     <width>261</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(8, 8, 8, 0.66);
-padding: 0 20px;
-border-radius: 10px;
-border: none;</string>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::EchoMode::Normal</enum>
-   </property>
-   <property name="placeholderText">
-    <string>ФИО преступника</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_12">
    <property name="geometry">
     <rect>
@@ -381,6 +359,69 @@ border: none;</string>
    </property>
    <property name="placeholderText">
     <string>Выберите статус</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>700</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+   </property>
+   <property name="text">
+    <string>применить</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cb_criminal">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>580</y>
+     <width>261</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(8, 8, 8, 0.66);
+padding: 10px 20px;
+border-radius: 10px;
+border: none;</string>
+   </property>
+   <property name="placeholderText">
+    <string>Выберите преступника</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>700</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+   </property>
+   <property name="text">
+    <string>сбросить</string>
    </property>
   </widget>
  </widget>

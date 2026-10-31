@@ -343,7 +343,7 @@ color: #FFE5E5;</string>
    <widget class="QPushButton" name="btn_cart">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>770</x>
       <y>10</y>
       <width>101</width>
       <height>41</height>
@@ -363,6 +363,39 @@ color: #FFE5E5;</string>
     </property>
     <property name="text">
      <string>Корзина</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_exit">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>10</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LayoutDirection::RightToLeft</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+background-color: none;
+padding: 5px;
+color: red;
+border: 1px solid red;</string>
+    </property>
+    <property name="text">
+     <string>Выйти</string>
     </property>
     <property name="icon">
      <iconset>

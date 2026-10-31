@@ -25,6 +25,12 @@ from UI.AddVictim import Ui_Dialog as AddVictim
 from UI.AddWitness import Ui_Dialog as AddWitness
 from UI.AddSuspectCrime import Ui_Dialog as AddSuspectCrime
 from UI.CartWindow import Ui_MainWindow as CartWindow
+from UI.GuestWindow import Ui_MainWindow as GuestWindow
+from PySide6.QtCore import QDate
+
+admin_ui = None
+user_ui = None
+investigator_ui = None
 
 def open_cart_window():
     global cart_window, cart_ui
@@ -56,7 +62,8 @@ def open_admin_window():
     admin_ui.pushButton_12.clicked.connect(open_add_witness)
     admin_ui.pushButton_13.clicked.connect(open_suspect_crime)
     admin_ui.btn_cart.clicked.connect(open_cart_window)
-    
+    admin_ui.btn_exit.clicked.connect(lambda:(admin_window.close(), open_guest_window()))
+    admin_ui.lineEdit.textChanged.connect(lambda text: live_search(admin_ui, "admin", text))
 
     load_crime_card(admin_ui, "admin")
     admin_window.show()
@@ -70,6 +77,9 @@ def open_user_window():
     user_ui.setupUi(user_window)
 
     user_ui.btn_filters.clicked.connect(open_filters_dialog)
+    user_ui.btn_exit.clicked.connect(lambda:(user_window.close(), open_guest_window()))
+    user_ui.line_search.textChanged.connect(lambda text: live_search(user_ui, "user", text))
+
     load_crime_card(user_ui, "user")
     user_window.show()
 
@@ -91,11 +101,13 @@ def open_investigator_window():
     investigator_ui.pushButton_11.clicked.connect(open_add_victim)
     investigator_ui.pushButton_12.clicked.connect(open_add_witness)
     investigator_ui.pushButton_13.clicked.connect(open_suspect_crime)
+    investigator_ui.btn_exit.clicked.connect(lambda:(investigator_window.close(), open_guest_window()))
+    investigator_ui.search.textChanged.connect(lambda text: live_search(investigator_ui, "investigator", text))
 
     load_crime_card(investigator_ui, "investigator")
     investigator_window.show()
 
-#открытие окон добавления и редактирования данных
+#открытие окна фильтров
 def open_filters_dialog():
     global filters_window, filters_ui
 
@@ -103,7 +115,123 @@ def open_filters_dialog():
     filters_ui = FiltersDialog()
     filters_ui.setupUi(filters_window)
 
+    filters_ui.pushButton.clicked.connect(apply_filters)
+    filters_ui.pushButton_2.clicked.connect(reset_filters)
+
+    crime_type = dbconnect.get_crime_type()
+    filters_ui.cb_crime_type.clear()
+    filters_ui.cb_crime_type.addItem("Все типы", None)
+
+    #отображение enum в комбобоксах
+    for i in crime_type:
+        filters_ui.cb_crime_type.addItem(i[1], i[1])
+
+    status = dbconnect.get_crime_status()
+    filters_ui.cb_status_case.clear()
+    filters_ui.cb_status_case.addItem("Все статусы", None)
+
+    #отображение enum в комбобоксах
+    for i in status:
+        filters_ui.cb_status_case.addItem(i[1], i[1])
+
+    suspect_status = dbconnect.get_suspect_status()
+    filters_ui.cb_criminal_status.clear()
+    filters_ui.cb_criminal_status.addItem("Все статусы", None)
+
+    #отображение enum в комбобоксах
+    for i in suspect_status:
+        filters_ui.cb_criminal_status.addItem(i[1], i[1])
+
+    suspects = dbconnect.get_suspects()
+    filters_ui.cb_criminal.clear()
+    filters_ui.cb_criminal.addItem("Все преступники", None)
+
+    #отображение данных вместо id в комбобоксах
+    for i in suspects:
+        suspect_id = i[0]
+        suspect_name = i[1]
+
+        filters_ui.cb_criminal.addItem(
+            suspect_name,
+            suspect_id
+        )
+
+    investigators = dbconnect.get_investigator()
+    filters_ui.cb_investigator.clear()
+    filters_ui.cb_investigator.addItem("Все следователи", None)
+
+    #отображение данных вместо id в комбобоксах
+    for i in investigators:
+        investigator_id = i[0]
+        investigator_name = i[1]
+
+        filters_ui.cb_investigator.addItem(
+            investigator_name,
+            investigator_id
+        )
+
     filters_window.show()
+
+#применение фильтров
+def apply_filters():
+    date_from = filters_ui.dateEdit.date().toString("yyyy-MM-dd")
+    date_to = filters_ui.dateEdit_2.date().toString("yyyy-MM-dd")
+    crime_type = filters_ui.cb_crime_type.currentData()
+    district = filters_ui.line_district.text().strip()
+    investigator_id = filters_ui.cb_investigator.currentData()
+    crime_status = filters_ui.cb_status_case.currentData()
+    suspect_name = filters_ui.cb_criminal.currentData()
+    suspect_status = filters_ui.cb_criminal_status.currentData()
+
+    crimes = dbconnect.filtered_data(date_from, date_to, crime_type, district, investigator_id, crime_status, suspect_name, suspect_status)
+
+    if admin_ui is not None:
+        load_crime_card(admin_ui, "admin", crimes)
+
+    if user_ui is not None:
+        load_crime_card(user_ui, "user", crimes)
+
+    if investigator_ui is not None:
+        load_crime_card(investigator_ui, "investigator", crimes)
+
+    if crimes:
+        filters_window.close()
+    else:
+        QMessageBox.information(
+            filters_window,
+            "Результат фильтрации",
+            "По выбранным критериям преступления не найдены."
+        )
+
+def live_search(window, role, search_text):
+    crimes = dbconnect.live_search(search_text)
+    load_crime_card(window, role, crimes)
+
+def reset_filters():
+    # Сбрасываем даты
+    filters_ui.dateEdit.setDate(QDate(2020, 1, 1))
+    filters_ui.dateEdit_2.setDate(QDate(2026, 12, 31))
+
+    # Сбрасываем ComboBox
+    filters_ui.cb_crime_type.setCurrentIndex(0)
+    filters_ui.cb_investigator.setCurrentIndex(0)
+    filters_ui.cb_status_case.setCurrentIndex(0)
+    filters_ui.cb_criminal.setCurrentIndex(0)
+    filters_ui.cb_criminal_status.setCurrentIndex(0)
+
+    # Очищаем район
+    filters_ui.line_district.clear()
+
+    crimes = dbconnect.get_crime_card()
+
+    if admin_ui is not None:
+        load_crime_card(admin_ui, "admin", crimes)
+
+    if user_ui is not None:
+        load_crime_card(user_ui, "user", crimes)
+
+    if investigator_ui is not None:
+        load_crime_card(investigator_ui, "investigator", crimes)
 
 def open_suspect_crime():
     global suspect_crime_window, suspect_crime_ui
@@ -728,9 +856,12 @@ def restore_crime_card(crime_id):
 
 
 #отображение карточки преступления
-def load_crime_card(window, role):
+def load_crime_card(window, role, crime_card=None):
     global crime_card_window, card_crime_ui
-    crime_card = dbconnect.get_crime_card()
+
+    if crime_card is None:
+        crime_card = dbconnect.get_crime_card()
+    # crime_card = dbconnect.get_crime_card()
 
     scroll_area = window.scrollArea
 
@@ -785,6 +916,8 @@ def load_crime_card(window, role):
 
         elif role == "user":
             pass
+        elif role == "guest":
+            pass
 
         elif role == "investigator":
             pass
@@ -800,6 +933,7 @@ def load_crime_card(window, role):
 #отображение карточки в корзине
 def load_crime_card_in_trash(window, role):
     # global crime_card_window, card_crime_ui
+
     crime_card = dbconnect.get_cards_in_trash()
 
     scroll_area = window.scrollArea
@@ -1031,22 +1165,34 @@ def delete_crime(crime_id, card):
             "Не удалось удалить преступление и связанные данные."
         )
 
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
+def open_login_dialog():
     global login_window, login_ui
-
+    
     login_window = QDialog()
     login_ui = Login()
     login_ui.setupUi(login_window)
 
     login_ui.pushButton.clicked.connect(authorization)
     login_ui.pushButton_2.clicked.connect(open_registration_window)
-
+    login_ui.pushButton_3.clicked.connect(lambda: (login_window.close(), open_guest_window()))
+    guest_window.close()
     login_window.show()
 
     login_ui.label_5.setVisible(False)
     login_ui.label_6.setVisible(False)
+
+def open_guest_window():
+    global guest_window, guest_ui
+            
+    guest_window = QMainWindow()
+    guest_ui = GuestWindow()
+    guest_ui.setupUi(guest_window)
+    load_crime_card(guest_ui, "guest")
+    guest_ui.pushButton.clicked.connect(open_login_dialog)
+
+    guest_window.show()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    open_guest_window()
     sys.exit(app.exec())
