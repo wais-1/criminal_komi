@@ -1,0 +1,50 @@
+
+translations = {
+    "ru": {
+        "main_title": "Система учёта преступлений",
+        "search": "Что вы хотите найти?",
+        "cart": "Корзина",
+        "exit": "Выйти",
+        "filters": "Фильтры",
+        "reset": "Сбросить",
+        "add_crime": "добавить преступление",
+        "add_case": "добавить УД",
+        "add_record": "добавить протокол допроса",
+        "add_suspect": "добавить подозреваемого",
+        "add_clue": "добавить улику",
+        "add_location": "добавить место",
+        "add_victim": "добавить потерпевшего",
+        "add_witness": "добавить свидетеля",
+        "add_suspect_crime": "привзять преступление",
+        "edit": "обновить",
+        "delete": "удалить",
+        "read": "Читать",
+        "restore": "восстановить",
+        "permanent_delete": "удалить навсегда",
+        "no_results": "По выбранным критериям ничего не найдено."
+    },
+
+    "en": {
+        "main_title": "Crime Management System",
+        "search": "Search...",
+        "cart": "Cart",
+        "exit": "Exit",
+        "filters": "Filters",
+        "reset": "Reset filters",
+        "add_crime": "add crime",
+        "add_case": "add case",
+        "add_record": "add record",
+        "add_suspect": "add suspect",
+        "add_clue": "add clue",
+        "add_location": "add location",
+        "add_victim": "add victim",
+        "add_witness": "add witness",
+        "add_suspect_crime": "add suspect_crime",
+        "edit": "Edit",
+        "delete": "Delete",
+        "read": "Details",
+        "restore": "Restore",
+        "permanent_delete": "Delete permanently",
+        "no_results": "No records match the selected criteria."
+    }
+}

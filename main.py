@@ -1,6 +1,7 @@
 import sys
 
 import dbconnect
+from translate import translations
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QScrollArea, QWidget, QVBoxLayout, QLabel, QSizePolicy, QMessageBox
 
@@ -31,6 +32,11 @@ from PySide6.QtCore import QDate
 admin_ui = None
 user_ui = None
 investigator_ui = None
+
+current_language = "ru"
+
+def tr(key):
+    return translations[current_language].get(key, key)
 
 def open_cart_window():
     global cart_window, cart_ui
@@ -65,8 +71,64 @@ def open_admin_window():
     admin_ui.btn_exit.clicked.connect(lambda:(admin_window.close(), open_guest_window()))
     admin_ui.lineEdit.textChanged.connect(lambda text: live_search(admin_ui, "admin", text))
 
+    admin_ui.cb_lang.clear()
+    admin_ui.cb_lang.addItem("ru", "ru")
+    admin_ui.cb_lang.addItem("en", "en")
+    admin_ui.cb_lang.setCurrentIndex(0)
+
+    admin_ui.cb_lang.currentIndexChanged.connect(
+        lambda index: change_lang(index, admin_ui)
+    )  
+
     load_crime_card(admin_ui, "admin")
     admin_window.show()
+
+def change_lang(index, window):
+    global current_language
+
+    current_language = window.cb_lang.currentData()
+
+    update_interface()
+
+def update_interface():
+    if admin_ui is not None:
+        admin_ui.pushButton_7.setText(tr("filters"))
+        admin_ui.lineEdit.setPlaceholderText(tr("search"))
+        admin_ui.btn_cart.setText(tr("cart"))
+        admin_ui.btn_exit.setText(tr("exit"))
+        admin_ui.pushButton_2.setText(tr("add_crime"))
+        admin_ui.pushButton_3.setText(tr("add_case"))
+        admin_ui.pushButton_4.setText(tr("add_record"))
+        admin_ui.pushButton_5.setText(tr("add_suspect"))
+        admin_ui.pushButton_6.setText(tr("add_clue"))
+        admin_ui.pushButton_10.setText(tr("add_location"))
+        admin_ui.pushButton_11.setText(tr("add_victim"))
+        admin_ui.pushButton_12.setText(tr("add_witness"))
+        admin_ui.pushButton_13.setText(tr("add_suspect_crime"))
+
+        load_crime_card(admin_ui, "admin")
+
+    if user_ui is not None:
+        user_ui.line_search.setPlaceholderText(tr("search"))
+        user_ui.pushButton_7.setText(tr("filters"))
+        user_ui.btn_exit.setText(tr("exit"))
+        load_crime_card(user_ui, "user")
+
+    if investigator_ui is not None:
+        investigator_ui.search.setPlaceholderText(tr("search"))
+        investigator_ui.btn_add_crime.setText(tr("add_crime"))
+        investigator_ui.btn_add_criminal_case.setText(tr("add_case"))
+        investigator_ui.btn_add_protocol.setText(tr("add_record"))
+        investigator_ui.btn_add_murder.setText(tr("add_suspect"))
+        investigator_ui.btn_add_clue.setText(tr("add_clue"))
+        investigator_ui.pushButton_10.setText(tr("add_location"))
+        investigator_ui.pushButton_11.setText(tr("add_victim"))
+        investigator_ui.pushButton_12.setText(tr("add_witness"))
+        investigator_ui.pushButton_13.setText(tr("add_suspect_crime"))
+        investigator_ui.btn_exit.setText(tr("exit"))
+        investigator_ui.pushButton_7.setText(tr("filters"))
+        load_crime_card(investigator_ui, "investigator")
+
 
 #открытие окна пользователя
 def open_user_window():
@@ -76,10 +138,19 @@ def open_user_window():
     user_ui = UserWindow()
     user_ui.setupUi(user_window)
 
-    user_ui.btn_filters.clicked.connect(open_filters_dialog)
+    user_ui.pushButton_7.clicked.connect(open_filters_dialog)
     user_ui.btn_exit.clicked.connect(lambda:(user_window.close(), open_guest_window()))
     user_ui.line_search.textChanged.connect(lambda text: live_search(user_ui, "user", text))
 
+    user_ui.cb_lang.clear()
+    user_ui.cb_lang.addItem("ru", "ru")
+    user_ui.cb_lang.addItem("en", "en")
+    user_ui.cb_lang.setCurrentIndex(0)
+
+    user_ui.cb_lang.currentIndexChanged.connect(
+        lambda index: change_lang(index, user_ui)
+    )  
+    
     load_crime_card(user_ui, "user")
     user_window.show()
 
@@ -91,7 +162,7 @@ def open_investigator_window():
     investigator_ui = InvestigatorWindow()
     investigator_ui.setupUi(investigator_window)
 
-    investigator_ui.btn_filters.clicked.connect(open_filters_dialog)
+    investigator_ui.pushButton_7.clicked.connect(open_filters_dialog)
     investigator_ui.btn_add_crime.clicked.connect(open_add_crime)
     investigator_ui.btn_add_criminal_case.clicked.connect(open_add_case)
     investigator_ui.btn_add_protocol.clicked.connect(open_add_record)
@@ -103,6 +174,15 @@ def open_investigator_window():
     investigator_ui.pushButton_13.clicked.connect(open_suspect_crime)
     investigator_ui.btn_exit.clicked.connect(lambda:(investigator_window.close(), open_guest_window()))
     investigator_ui.search.textChanged.connect(lambda text: live_search(investigator_ui, "investigator", text))
+
+    investigator_ui.cb_lang.clear()
+    investigator_ui.cb_lang.addItem("ru", "ru")
+    investigator_ui.cb_lang.addItem("en", "en")
+    investigator_ui.cb_lang.setCurrentIndex(0)
+
+    investigator_ui.cb_lang.currentIndexChanged.connect(
+        lambda index: change_lang(index, investigator_ui)
+    )      
 
     load_crime_card(investigator_ui, "investigator")
     investigator_window.show()
@@ -892,6 +972,11 @@ def load_crime_card(window, role, crime_card=None):
         crime_card_ui.setupUi(crime_card_window)
         crime_id = crime[0]
 
+        crime_card_ui.btn_read.setText(tr("read"))
+        crime_card_ui.btn_delete.setText(tr("delete"))
+        crime_card_ui.btn_delete_2.setText(tr("restore"))
+        crime_card_ui.btn_delete_3.setText(tr("permanent_delete"))
+
         crime_card_ui.btn_delete.clicked.connect(lambda checked=False, cid=crime_id: soft_delete_card(cid))
 
         crime_card_ui.btn_read.clicked.connect(lambda checked=False, cid=crime_id: open_crime_window(cid))
@@ -964,6 +1049,9 @@ def load_crime_card_in_trash(window, role):
         crime_card_ui = CrimeCard()
         crime_card_ui.setupUi(crime_card_window)
         crime_id = crime[0]
+        
+        crime_card_ui.btn_delete_2.setText(tr("restore"))
+        crime_card_ui.btn_delete_3.setText(tr("permanent_delete"))
 
         crime_card_ui.btn_delete.setVisible(False)
         crime_card_ui.btn_read.setVisible(False)

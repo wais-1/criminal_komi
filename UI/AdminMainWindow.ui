@@ -173,7 +173,7 @@ color: #FFE5E5;</string>
      <rect>
       <x>230</x>
       <y>10</y>
-      <width>401</width>
+      <width>331</width>
       <height>41</height>
      </rect>
     </property>
@@ -185,37 +185,6 @@ border: none;</string>
     </property>
     <property name="placeholderText">
      <string>Что вы хотите найти?</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_7">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>10</y>
-      <width>101</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::RightToLeft</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">border-radius: 10px;
-background-color:  none;
-color: #FFE5E5;</string>
-    </property>
-    <property name="text">
-     <string>Фильтры   </string>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_10">
@@ -340,70 +309,108 @@ color: #FFE5E5;</string>
      <string>привязать преступление</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_cart">
+   <widget class="QFrame" name="">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>580</x>
       <y>10</y>
-      <width>101</width>
-      <height>41</height>
+      <width>341</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::RightToLeft</enum>
-    </property>
     <property name="styleSheet">
-     <string notr="true">border-radius: 10px;
+     <string notr="true">background-color: none;</string>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QComboBox" name="cb_lang">
+       <property name="styleSheet">
+        <string notr="true">border-radius: 10px;
+background-color: transparent;
+padding: 5px;
+color: #FFE5E5;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_7">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LayoutDirection::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 10px;
+background-color:  none;
+color: #FFE5E5;</string>
+       </property>
+       <property name="text">
+        <string>Фильтры   </string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_cart">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LayoutDirection::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 10px;
 background-color: #3D0A0A;
 padding: 5px;
 color: #FFE5E5;</string>
-    </property>
-    <property name="text">
-     <string>Корзина</string>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_exit">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>10</y>
-      <width>101</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::RightToLeft</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">border-radius: 10px;
+       </property>
+       <property name="text">
+        <string>Корзина</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_exit">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LayoutDirection::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 10px;
 background-color: none;
 padding: 5px;
 color: red;
 border: 1px solid red;</string>
-    </property>
-    <property name="text">
-     <string>Выйти</string>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
+       </property>
+       <property name="text">
+        <string>Выйти</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../../../../Users/daria/Downloads/icon-filters.svg</normaloff>../../../../Users/daria/Downloads/icon-filters.svg</iconset>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

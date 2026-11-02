@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
-    QMenuBar, QPushButton, QScrollArea, QSizePolicy,
-    QStatusBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
+    QLabel, QLineEdit, QMainWindow, QMenuBar,
+    QPushButton, QScrollArea, QSizePolicy, QStatusBar,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -41,23 +42,11 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.search = QLineEdit(self.centralwidget)
         self.search.setObjectName(u"search")
-        self.search.setGeometry(QRect(220, 10, 401, 41))
+        self.search.setGeometry(QRect(220, 10, 331, 41))
         self.search.setStyleSheet(u"background-color: rgba(8, 8, 8, 0.66);\n"
 "padding: 10px 20px;\n"
 "border-radius: 10px;\n"
 "border: none;")
-        self.btn_filters = QPushButton(self.centralwidget)
-        self.btn_filters.setObjectName(u"btn_filters")
-        self.btn_filters.setGeometry(QRect(650, 10, 101, 41))
-        self.btn_filters.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_filters.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.btn_filters.setStyleSheet(u"border-radius: 10px;\n"
-"background-color:  none;\n"
-"color: #FFE5E5;")
-        icon = QIcon()
-        icon.addFile(u"../../../../Users/daria/Downloads/icon-filters.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_filters.setIcon(icon)
-        self.btn_filters.setFlat(False)
         self.btn_add_protocol = QPushButton(self.centralwidget)
         self.btn_add_protocol.setObjectName(u"btn_add_protocol")
         self.btn_add_protocol.setGeometry(QRect(10, 200, 191, 41))
@@ -145,9 +134,37 @@ class Ui_MainWindow(object):
 "background-color: #3D0A0A;\n"
 "padding: 5px;\n"
 "color: #FFE5E5;")
-        self.btn_exit = QPushButton(self.centralwidget)
+        self.frame = QFrame(self.centralwidget)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(570, 10, 341, 51))
+        self.frame.setStyleSheet(u"background-color: none;")
+        self.horizontalLayout = QHBoxLayout(self.frame)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.cb_lang = QComboBox(self.frame)
+        self.cb_lang.setObjectName(u"cb_lang")
+        self.cb_lang.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: transparent;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+
+        self.horizontalLayout.addWidget(self.cb_lang)
+
+        self.pushButton_7 = QPushButton(self.frame)
+        self.pushButton_7.setObjectName(u"pushButton_7")
+        self.pushButton_7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_7.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.pushButton_7.setStyleSheet(u"border-radius: 10px;\n"
+"background-color:  none;\n"
+"color: #FFE5E5;")
+        icon = QIcon()
+        icon.addFile(u"../../../../Users/daria/Downloads/icon-filters.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pushButton_7.setIcon(icon)
+        self.pushButton_7.setFlat(False)
+
+        self.horizontalLayout.addWidget(self.pushButton_7)
+
+        self.btn_exit = QPushButton(self.frame)
         self.btn_exit.setObjectName(u"btn_exit")
-        self.btn_exit.setGeometry(QRect(760, 10, 101, 41))
         self.btn_exit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_exit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         self.btn_exit.setStyleSheet(u"border-radius: 10px;\n"
@@ -157,6 +174,9 @@ class Ui_MainWindow(object):
 "border: 1px solid red;")
         self.btn_exit.setIcon(icon)
         self.btn_exit.setFlat(False)
+
+        self.horizontalLayout.addWidget(self.btn_exit)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -175,7 +195,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.btn_add_crime.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
         self.search.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u0427\u0442\u043e \u0432\u044b \u0445\u043e\u0442\u0438\u0442\u0435 \u043d\u0430\u0439\u0442\u0438?", None))
-        self.btn_filters.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.btn_add_protocol.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u0434\u043e\u043f\u0440\u043e\u0441\u0430", None))
         self.btn_add_murder.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0434\u043e\u0437\u0440\u0435\u0432\u0430\u0435\u043c\u043e\u0433\u043e", None))
         self.btn_add_clue.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0443\u043b\u0438\u043a\u0443", None))
@@ -186,6 +205,7 @@ class Ui_MainWindow(object):
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0442\u0435\u0440\u043f\u0435\u0432\u0448\u0435\u0433\u043e", None))
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
+        self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0439\u0442\u0438", None))
     # retranslateUi
 

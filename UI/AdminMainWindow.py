@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
-    QMenuBar, QPushButton, QScrollArea, QSizePolicy,
-    QStatusBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
+    QLabel, QLineEdit, QMainWindow, QMenuBar,
+    QPushButton, QScrollArea, QSizePolicy, QStatusBar,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -84,23 +85,11 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.lineEdit = QLineEdit(self.centralwidget)
         self.lineEdit.setObjectName(u"lineEdit")
-        self.lineEdit.setGeometry(QRect(230, 10, 401, 41))
+        self.lineEdit.setGeometry(QRect(230, 10, 331, 41))
         self.lineEdit.setStyleSheet(u"background-color: rgba(8, 8, 8, 0.66);\n"
 "padding: 10px 20px;\n"
 "border-radius: 10px;\n"
 "border: none;")
-        self.pushButton_7 = QPushButton(self.centralwidget)
-        self.pushButton_7.setObjectName(u"pushButton_7")
-        self.pushButton_7.setGeometry(QRect(660, 10, 101, 41))
-        self.pushButton_7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.pushButton_7.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.pushButton_7.setStyleSheet(u"border-radius: 10px;\n"
-"background-color:  none;\n"
-"color: #FFE5E5;")
-        icon = QIcon()
-        icon.addFile(u"../../../../Users/daria/Downloads/icon-filters.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pushButton_7.setIcon(icon)
-        self.pushButton_7.setFlat(False)
         self.pushButton_10 = QPushButton(self.centralwidget)
         self.pushButton_10.setObjectName(u"pushButton_10")
         self.pushButton_10.setGeometry(QRect(20, 350, 191, 41))
@@ -146,9 +135,37 @@ class Ui_MainWindow(object):
 "background-color: #3D0A0A;\n"
 "padding: 5px;\n"
 "color: #FFE5E5;")
-        self.btn_cart = QPushButton(self.centralwidget)
+        self.frame = QFrame(self.centralwidget)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(580, 10, 341, 51))
+        self.frame.setStyleSheet(u"background-color: none;")
+        self.horizontalLayout = QHBoxLayout(self.frame)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.cb_lang = QComboBox(self.frame)
+        self.cb_lang.setObjectName(u"cb_lang")
+        self.cb_lang.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: transparent;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+
+        self.horizontalLayout.addWidget(self.cb_lang)
+
+        self.pushButton_7 = QPushButton(self.frame)
+        self.pushButton_7.setObjectName(u"pushButton_7")
+        self.pushButton_7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_7.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.pushButton_7.setStyleSheet(u"border-radius: 10px;\n"
+"background-color:  none;\n"
+"color: #FFE5E5;")
+        icon = QIcon()
+        icon.addFile(u"../../../../Users/daria/Downloads/icon-filters.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pushButton_7.setIcon(icon)
+        self.pushButton_7.setFlat(False)
+
+        self.horizontalLayout.addWidget(self.pushButton_7)
+
+        self.btn_cart = QPushButton(self.frame)
         self.btn_cart.setObjectName(u"btn_cart")
-        self.btn_cart.setGeometry(QRect(770, 10, 101, 41))
         self.btn_cart.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_cart.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         self.btn_cart.setStyleSheet(u"border-radius: 10px;\n"
@@ -157,9 +174,11 @@ class Ui_MainWindow(object):
 "color: #FFE5E5;")
         self.btn_cart.setIcon(icon)
         self.btn_cart.setFlat(False)
-        self.btn_exit = QPushButton(self.centralwidget)
+
+        self.horizontalLayout.addWidget(self.btn_cart)
+
+        self.btn_exit = QPushButton(self.frame)
         self.btn_exit.setObjectName(u"btn_exit")
-        self.btn_exit.setGeometry(QRect(880, 10, 101, 41))
         self.btn_exit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_exit.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         self.btn_exit.setStyleSheet(u"border-radius: 10px;\n"
@@ -169,6 +188,9 @@ class Ui_MainWindow(object):
 "border: 1px solid red;")
         self.btn_exit.setIcon(icon)
         self.btn_exit.setFlat(False)
+
+        self.horizontalLayout.addWidget(self.btn_exit)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -193,11 +215,11 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0434\u043e\u0437\u0440\u0435\u0432\u0430\u0435\u043c\u043e\u0433\u043e", None))
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0443\u043b\u0438\u043a\u0443", None))
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u0427\u0442\u043e \u0432\u044b \u0445\u043e\u0442\u0438\u0442\u0435 \u043d\u0430\u0439\u0442\u0438?", None))
-        self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.pushButton_10.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043c\u0435\u0441\u0442\u043e", None))
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043f\u043e\u0442\u0435\u0440\u043f\u0435\u0432\u0448\u0435\u0433\u043e", None))
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0432\u0438\u0434\u0435\u0442\u0435\u043b\u044f", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u043f\u0440\u0438\u0432\u044f\u0437\u0430\u0442\u044c \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u0435", None))
+        self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0438\u043b\u044c\u0442\u0440\u044b   ", None))
         self.btn_cart.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u0440\u0437\u0438\u043d\u0430", None))
         self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0439\u0442\u0438", None))
     # retranslateUi
