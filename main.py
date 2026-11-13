@@ -3,9 +3,13 @@ import sys
 import dbconnect
 from translate import translations
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QScrollArea, QWidget, QVBoxLayout, QLabel, QSizePolicy, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QWidget, QVBoxLayout, QSizePolicy, QMessageBox
 
 from PySide6.QtCore import Qt
+
+import os
+import requests
+from dotenv import load_dotenv
 
 from UI.LogInDialog import Ui_Dialog as Login
 from UI.AdminMainWindow import Ui_MainWindow as AdminWindow
@@ -27,13 +31,66 @@ from UI.AddWitness import Ui_Dialog as AddWitness
 from UI.AddSuspectCrime import Ui_Dialog as AddSuspectCrime
 from UI.CartWindow import Ui_MainWindow as CartWindow
 from UI.GuestWindow import Ui_MainWindow as GuestWindow
+from UI.CrimeLocationWindow import Ui_MainWindow as CrimeLocationWindow
 from PySide6.QtCore import QDate
+
+from typing import Optional, Tuple
 
 admin_ui = None
 user_ui = None
 investigator_ui = None
 
 current_language = "ru"
+
+load_dotenv()
+
+DADATA_API_KEY = os.getenv("DADATA_API_KEY")
+DADATA_SECRET_KEY = os.getenv("DADATA_SECRET_KEY")
+
+def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
+    if not address or not address.strip():
+        return None, None
+
+    url = "https://cleaner.dadata.ru/api/v1/clean/address"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Token {DADATA_API_KEY}",
+        "X-Secret": DADATA_SECRET_KEY
+    }
+
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=[address.strip()],
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+        result = response.json()
+
+        if not result:
+            return None, None
+
+        data = result[0]
+
+        latitude = data.get("geo_lat")
+        longitude = data.get("geo_lon")
+
+        if not latitude or not longitude:
+            return None, None
+
+        return float(latitude), float(longitude)
+
+    except requests.RequestException as error:
+        print(f"Ошибка обращения к DaData: {error}")
+        return None, None
+
+    except (ValueError, TypeError, KeyError) as error:
+        print(f"Ошибка обработки координат: {error}")
+        return None, None
 
 def tr(key):
     return translations[current_language].get(key, key)
@@ -864,8 +921,21 @@ def open_crime_window(crime_id):
     crime_ui.setupUi(crime_window)
 
     crime_ui.btn_read_protocol.clicked.connect(lambda: open_protocol_window(crime_id))
+    crime_ui.btn_read_protocol_2.clicked.connect(lambda: open_crime_location_window(crime_id))
     load_crime_window(crime_id)
     crime_window.show()
+
+#окно места преступления
+def open_crime_location_window(crime_id):
+    global crime_location_window, crime_location_ui
+        
+    crime_location_window = QMainWindow()
+    crime_location_ui = CrimeLocationWindow()
+    crime_location_ui.setupUi(crime_location_window)
+
+    load_crime_location_window(crime_id)
+
+    crime_location_window.show()
 
 #окно протокола допроса
 def open_protocol_window(crime_id):
@@ -1108,6 +1178,37 @@ def load_crime_window(crime_id):
     crime_ui.lbl_case.setText(str(cases[2] or ""))
     crime_ui.lbl_date_open.setText(str(cases[3] or ""))
     crime_ui.lbl_date_close.setText(str(cases[4] or "Не закрыто"))
+
+def load_crime_location_window(crime_id):
+    crime_location = dbconnect.get_crime_location_by_id(crime_id)
+
+    crime_location_ui.label_4.setText(str(crime_location[1] or "Не указано"))
+    crime_location_ui.label_6.setText(str(crime_location[2] or "Не указано"))
+    crime_location_ui.label_8.setText(str(crime_location[3] or "Не указано"))
+    crime_location_ui.label_10.setText(str(crime_location[4] or "Не указано"))
+
+    address = crime_location[2]
+    coordinates = crime_location[1]
+
+    if coordinates:
+        latitude, longitude = map(float, coordinates.split(","))
+
+    elif address:
+        latitude, longitude = get_coordinates(address)
+
+        if latitude is not None and longitude is not None:
+            # Здесь можно сохранить координаты в БД
+            pass
+
+    else:
+        latitude, longitude = None, None
+
+    if latitude is not None and longitude is not None:
+        crime_location_ui.crime_map.show_location(
+            latitude,
+            longitude,
+            address
+        )
 
 def load_record_window(crime_id):
     record = dbconnect.get_record_by_crime_id(crime_id)

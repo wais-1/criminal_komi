@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(820, 600)
+        MainWindow.resize(854, 600)
         MainWindow.setStyleSheet(u"background: qlineargradient(\n"
 "    x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "    stop: 0.09 #6E0204,\n"
@@ -33,13 +33,15 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.scrollArea = QScrollArea(self.centralwidget)
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setGeometry(QRect(0, 0, 821, 600))
+        self.scrollArea.setGeometry(QRect(0, 0, 821, 741))
+        self.scrollArea.setStyleSheet(u"background-color: transparent;\n"
+"border: none;")
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 819, 1151))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -636, 821, 1489))
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -57,10 +59,6 @@ class Ui_MainWindow(object):
         self.lbl_img = QLabel(self.frame)
         self.lbl_img.setObjectName(u"lbl_img")
         self.lbl_img.setStyleSheet(u"background-color: #000000;")
-        self.scrollAreaWidgetContents.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
-        self.scrollArea.setStyleSheet(u"border: none;\n"
-        "background-color: transparent;\n")
 
         self.horizontalLayout_4.addWidget(self.lbl_img)
 
@@ -448,18 +446,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.frame_3)
 
-        self.btn_read_protocol = QPushButton(self.scrollAreaWidgetContents)
-        self.btn_read_protocol.setObjectName(u"btn_read_protocol")
-        sizePolicy1.setHeightForWidth(self.btn_read_protocol.sizePolicy().hasHeightForWidth())
-        self.btn_read_protocol.setSizePolicy(sizePolicy1)
-        self.btn_read_protocol.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_read_protocol.setStyleSheet(u"border-radius: 10px;\n"
-"background-color: #3D0A0A;\n"
-"padding: 15px;\n"
-"color: #FFE5E5;")
-
-        self.verticalLayout_3.addWidget(self.btn_read_protocol)
-
         self.frame10 = QFrame(self.scrollAreaWidgetContents)
         self.frame10.setObjectName(u"frame10")
         self.frame10.setStyleSheet(u"background-color: none;")
@@ -580,6 +566,30 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.frame_2)
 
+        self.btn_read_protocol = QPushButton(self.frame10)
+        self.btn_read_protocol.setObjectName(u"btn_read_protocol")
+        sizePolicy1.setHeightForWidth(self.btn_read_protocol.sizePolicy().hasHeightForWidth())
+        self.btn_read_protocol.setSizePolicy(sizePolicy1)
+        self.btn_read_protocol.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_read_protocol.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 15px;\n"
+"color: #FFE5E5;")
+
+        self.verticalLayout_5.addWidget(self.btn_read_protocol)
+
+        self.btn_read_protocol_2 = QPushButton(self.frame10)
+        self.btn_read_protocol_2.setObjectName(u"btn_read_protocol_2")
+        sizePolicy1.setHeightForWidth(self.btn_read_protocol_2.sizePolicy().hasHeightForWidth())
+        self.btn_read_protocol_2.setSizePolicy(sizePolicy1)
+        self.btn_read_protocol_2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_read_protocol_2.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 15px;\n"
+"color: #FFE5E5;")
+
+        self.verticalLayout_5.addWidget(self.btn_read_protocol_2)
+
 
         self.verticalLayout_3.addWidget(self.frame10)
 
@@ -600,7 +610,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 820, 33))
+        self.menubar.setGeometry(QRect(0, 0, 854, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -640,7 +650,6 @@ class Ui_MainWindow(object):
         self.lbl_clue_descr.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0438\u043b\u0443\u044d\u0442\u044b \u0434\u0432\u0443\u0445 \u043c\u0443\u0436\u0447\u0438\u043d, \u0432\u044b\u043d\u043e\u0441\u044f\u0449\u0438\u0445 \u0442\u044f\u0436\u0435\u043b\u044b\u0439 \u043f\u0440\u044f\u043c\u043e\u0443\u0433\u043e\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u0435\u0434\u043c\u0435\u0442 \u0432 \u0421\u044b\u043a\u0442\u044b\u0432\u043a\u0430\u0440\u0435.", None))
         self.label_34.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0438\u043f:", None))
         self.lbl_clue_type.setText(QCoreApplication.translate("MainWindow", u"\u0434\u0430\u043d\u043d\u044b\u0435 \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432", None))
-        self.btn_read_protocol.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0438\u0442\u0430\u0442\u044c \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u0434\u043e\u043f\u0440\u043e\u0441\u0430", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u0443\u0433\u043e\u043b\u043e\u0432\u043d\u043e\u0435 \u0434\u0435\u043b\u043e \u2116", None))
         self.lbl_case_number.setText(QCoreApplication.translate("MainWindow", u"123", None))
         self.label_21.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u044c\u044f \u0423\u041a:", None))
@@ -649,6 +658,8 @@ class Ui_MainWindow(object):
         self.lbl_date_open.setText(QCoreApplication.translate("MainWindow", u"01.01.2025", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0430 \u0437\u0430\u043a\u0440\u044b\u0442\u0438\u044f:", None))
         self.lbl_date_close.setText(QCoreApplication.translate("MainWindow", u"01.04.2025", None))
+        self.btn_read_protocol.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0438\u0442\u0430\u0442\u044c \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u0434\u043e\u043f\u0440\u043e\u0441\u0430", None))
+        self.btn_read_protocol_2.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043c\u0435\u0441\u0442\u043e \u043f\u0440\u0435\u0441\u0442\u0443\u043f\u043b\u0435\u043d\u0438\u044f", None))
         self.lbl_date_text.setText(QCoreApplication.translate("MainWindow", u"\u0412 \u0420\u0435\u0441\u043f\u0443\u0431\u043b\u0438\u043a\u0435 \u041a\u043e\u043c\u0438 \u0440\u0430\u0441\u0441\u043b\u0435\u0434\u0443\u0435\u0442\u0441\u044f \u0434\u0435\u0440\u0437\u043a\u043e\u0435 \u043e\u0433\u0440\u0430\u0431\u043b\u0435\u043d\u0438\u0435: \u0432 \u043d\u043e\u0447\u044c \u043d\u0430 10 \u043e\u043a\u0442\u044f\u0431\u0440\u044f \u0432 \u0433\u043e\u0440\u043e\u0434\u0435 \u0412\u043e\u0440\u043a\u0443\u0442\u0430 \u0433\u0440\u0443\u043f\u043f\u0430 \u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044b\u0445 \u043b\u0438\u0446 \u0441\u043e\u0432\u0435\u0440\u0448\u0438\u043b\u0430 \u0442\u0449\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0441\u043f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0435 \u043d\u0430\u043f\u0430\u0434\u0435\u043d\u0438\u0435 \u043d\u0430 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044c\u043d\u043e-\u0442\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u043a\u043b\u0430\u0434 \u043a\u0440\u0443\u043f\u043d"
                         "\u043e\u0433\u043e \u0433\u043e\u0440\u043d\u043e-\u043e\u0431\u043e\u0433\u0430\u0442\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0433\u043e \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0442\u0430, \u0440\u0430\u0441\u043f\u043e\u043b\u043e\u0436\u0435\u043d\u043d\u044b\u0439 \u043d\u0430 \u043f\u0440\u043e\u043c\u044b\u0448\u043b\u0435\u043d\u043d\u043e\u0439 \u043e\u043a\u0440\u0430\u0438\u043d\u0435 \u0433\u043e\u0440\u043e\u0434\u0430.\n"
 "\u0417\u043b\u043e\u0443\u043c\u044b\u0448\u043b\u0435\u043d\u043d\u0438\u043a\u0438 \u043f\u0440\u043e\u0444\u0435\u0441\u0441\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e \u043d\u0435\u0439\u0442\u0440\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b\u0438 \u043e\u0445\u0440\u0430\u043d\u043d\u0443\u044e \u0441\u0438\u0433\u043d\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044e \u0438 \u0432\u044b\u0432\u0435\u043b\u0438 \u0438\u0437 \u0441\u0442\u0440\u043e\u044f \u0441\u0438\u0441\u0442\u0435\u043c\u0443 \u0432\u043d\u0435\u0448\u043d\u0435\u0433\u043e \u0432\u0438\u0434"

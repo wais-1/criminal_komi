@@ -68,6 +68,36 @@ def get_crime_by_id(crime_id):
         if conn:
             conn.close()
 
+#получение данных по id для корректного открытия окна преступления через карточку
+def get_crime_location_by_id(crime_id):
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT cl.id, cl.coordinates, cl.address, cl.district, cl.object_type
+                FROM crime_location cl
+                join crime on crime.id_crime_location = cl.id
+                WHERE crime.id = %s
+            """, (crime_id,))
+
+            crime = cursor.fetchone()
+
+        return crime
+
+    except Exception as e:
+        print(f"error: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+# def get_crime_coordinates(cl_id):
+#     try:
+#         conn = get_db_connection()
+#         with conn.cursor() as cursor:
+#             cursor.execute("select address, coordinates from crime_location where id = %s", (cl_id))
+
 def get_suspect_by_id(crime_id):
     try:
         conn = get_db_connection()

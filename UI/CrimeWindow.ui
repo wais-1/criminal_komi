@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
+    <width>854</width>
     <height>600</height>
    </rect>
   </property>
@@ -27,8 +27,12 @@
       <x>0</x>
       <y>0</y>
       <width>821</width>
-      <height>600</height>
+      <height>741</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: transparent;
+border: none;</string>
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
@@ -43,9 +47,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>0</y>
-       <width>819</width>
-       <height>1151</height>
+       <y>-636</y>
+       <width>821</width>
+       <height>1489</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -58,7 +62,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QFrame" name="">
+         <widget class="QFrame" name="frame">
           <property name="styleSheet">
            <string notr="true">background-color: none;</string>
           </property>
@@ -74,7 +78,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="styleSheet">
               <string notr="true">background-color: none;</string>
              </property>
@@ -98,7 +102,7 @@ text-transform: uppercase;</string>
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="">
+               <widget class="QFrame" name="frame">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -156,7 +160,7 @@ font-size: 14pt;</string>
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="">
+               <widget class="QFrame" name="frame">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -217,7 +221,7 @@ font-size: 14pt;</string>
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="">
+               <widget class="QFrame" name="frame">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -281,7 +285,7 @@ font-size: 14pt;</string>
          </widget>
         </item>
         <item>
-         <widget class="QFrame" name="">
+         <widget class="QFrame" name="frame">
           <property name="styleSheet">
            <string notr="true">background-color: none;</string>
           </property>
@@ -305,7 +309,7 @@ text-transform: uppercase;</string>
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -354,7 +358,7 @@ font-size: 14pt;</string>
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -403,7 +407,7 @@ font-size: 14pt;</string>
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -452,7 +456,7 @@ font-size: 14pt;</string>
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -727,35 +731,13 @@ font-size: 14pt;</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btn_read_protocol">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: #3D0A0A;
-padding: 15px;
-color: #FFE5E5;</string>
-          </property>
-          <property name="text">
-           <string>Читать протокол допроса</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="">
+         <widget class="QFrame" name="frame">
           <property name="styleSheet">
            <string notr="true">background-color: none;</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -809,7 +791,7 @@ text-transform: uppercase;</string>
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="">
+            <widget class="QFrame" name="frame">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -955,6 +937,50 @@ font-size: 14pt;</string>
              </layout>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="btn_read_protocol">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+             </property>
+             <property name="text">
+              <string>Читать протокол допроса</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_read_protocol_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+             </property>
+             <property name="text">
+              <string>Смотреть место преступления</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -991,7 +1017,7 @@ font-size: 14pt;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>820</width>
+     <width>854</width>
      <height>33</height>
     </rect>
    </property>
