@@ -16,8 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QMainWindow, QMenuBar, QSizePolicy, QStatusBar,
-    QVBoxLayout, QWidget)
+    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
+    QStatusBar, QVBoxLayout, QWidget)
+
 from crime_map import CrimeMap
 
 class Ui_MainWindow(object):
@@ -42,7 +43,7 @@ class Ui_MainWindow(object):
         self.crime_map.setObjectName("crime_map")
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(30, 50, 321, 231))
+        self.frame.setGeometry(QRect(30, 50, 521, 231))
         self.frame.setStyleSheet(u"background-color: none;")
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -53,6 +54,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label_3 = QLabel(self.frame1)
         self.label_3.setObjectName(u"label_3")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy)
         self.label_3.setStyleSheet(u"font-size: 16px;\n"
 "background-color: none;")
 
@@ -75,6 +81,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_5 = QLabel(self.frame2)
         self.label_5.setObjectName(u"label_5")
+        sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy)
         self.label_5.setStyleSheet(u"font-size: 16px;\n"
 "background-color: none;")
 
@@ -97,6 +105,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_7 = QLabel(self.frame_2)
         self.label_7.setObjectName(u"label_7")
+        sizePolicy.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
+        self.label_7.setSizePolicy(sizePolicy)
         self.label_7.setStyleSheet(u"font-size: 16px;\n"
 "background-color: none;")
 
@@ -119,6 +129,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.label_9 = QLabel(self.frame_3)
         self.label_9.setObjectName(u"label_9")
+        sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
+        self.label_9.setSizePolicy(sizePolicy)
         self.label_9.setStyleSheet(u"font-size: 16px;\n"
 "background-color: none;")
 
@@ -134,6 +146,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.frame_3)
 
+        self.pushButton = QPushButton(self.centralwidget)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(40, 580, 200, 41))
+        self.pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 15px;\n"
+"color: #FFE5E5;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -151,7 +171,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0415\u0421\u0422\u041e \u041f\u0420\u0415\u0421\u0422\u0423\u041f\u041b\u0415\u041d\u0418\u042f", None))
-        # self.label_2.setText("")
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b:", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441:", None))
@@ -160,5 +179,6 @@ class Ui_MainWindow(object):
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"\u0440\u0430\u0439\u043e\u043d", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0438\u043f \u043e\u0431\u044a\u0435\u043a\u0442\u0430:", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"\u0442\u0438\u043f", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b", None))
     # retranslateUi
 

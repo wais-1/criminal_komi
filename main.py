@@ -4,8 +4,8 @@ import dbconnect
 from translate import translations
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QWidget, QVBoxLayout, QSizePolicy, QMessageBox
-
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import QTimer, Qt
 
 import os
 import requests
@@ -35,6 +35,7 @@ from UI.CrimeLocationWindow import Ui_MainWindow as CrimeLocationWindow
 from PySide6.QtCore import QDate
 
 from typing import Optional, Tuple
+import logging
 
 admin_ui = None
 user_ui = None
@@ -44,10 +45,34 @@ current_language = "ru"
 
 load_dotenv()
 
+#получение апи ключей дадата
 DADATA_API_KEY = os.getenv("DADATA_API_KEY")
 DADATA_SECRET_KEY = os.getenv("DADATA_SECRET_KEY")
 
+logger = logging.getLogger("dadata")
+
+#добавление в файл логов при добавлении новых координат в бд
+os.makedirs("logs", exist_ok=True)
+
+logger = logging.getLogger("dadata")
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler(
+    "logs/dadata_api.log",
+    encoding="utf-8"
+)
+
+formatter = logging.Formatter(
+    "%(asctime)s | %(levelname)s | %(message)s"
+)
+
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+
+#получение коордитнат для корректного отображения на карте
 def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
+    print("ok")
     if not address or not address.strip():
         return None, None
 
@@ -60,18 +85,26 @@ def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
     }
 
     try:
+        logger.info(f"DaData запрос: {address}")
         response = requests.post(
             url,
             headers=headers,
             json=[address.strip()],
             timeout=10
         )
+        logger.info(f"DaData ответ: status={response.status_code}")
+
+        #превышение лимита заросов
+        if response.status_code == 429:
+            logger.warning("DaData: превышен лимит запросов")
+            return None, None
 
         response.raise_for_status()
 
         result = response.json()
 
         if not result:
+            logger.warning(f"DaData: адрес не найден: {address}")
             return None, None
 
         data = result[0]
@@ -84,13 +117,59 @@ def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
 
         return float(latitude), float(longitude)
 
-    except requests.RequestException as error:
-        print(f"Ошибка обращения к DaData: {error}")
-        return None, None
+    except requests.Timeout:
+        logger.error("DaData: превышено время ожидания")
 
-    except (ValueError, TypeError, KeyError) as error:
-        print(f"Ошибка обработки координат: {error}")
-        return None, None
+    except requests.RequestException as error:
+        logger.error(f"DaData: ошибка запроса: {error}")
+    return None, None
+
+#обновление координат (ручная синхронизация)
+def sync_coordinates(crime_id):
+    crime_location = dbconnect.get_crime_location_by_id(crime_id)
+    if not crime_location:
+        return
+    address = crime_location[2]
+
+    if not address:
+        show_toast(crime_location_ui.centralwidget, "адрес отсутсвует")
+        return
+
+    latitude, longitude = get_coordinates(address)
+
+    if latitude is None or longitude is None:
+        show_toast(crime_location_ui.centralwidget, "не удалось получить координаты")
+        return
+
+    coordinates = f"{latitude},{longitude}"
+
+    dbconnect.update_coordinates(crime_location[0], coordinates)
+
+    load_crime_location_window(crime_id)
+
+    show_toast(crime_location_ui.centralwidget, "координаты успешно обновлены")
+
+#тост-уведомление
+def show_toast(parent, message):
+    toast = QLabel(message, parent)
+
+    toast.setStyleSheet("""
+        background-color: #323232;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+    """)
+
+    toast.setAlignment(Qt.AlignCenter)
+    toast.adjustSize()
+
+    toast.move((parent.width() - toast.width()) // 2, parent.height() - toast.height() - 40)
+
+    toast.show()
+    toast.raise_()
+
+    QTimer.singleShot(5000, toast.deleteLater)
 
 def tr(key):
     return translations[current_language].get(key, key)
@@ -932,6 +1011,8 @@ def open_crime_location_window(crime_id):
     crime_location_window = QMainWindow()
     crime_location_ui = CrimeLocationWindow()
     crime_location_ui.setupUi(crime_location_window)
+
+    crime_location_ui.pushButton.clicked.connect(lambda: sync_coordinates(crime_id))
 
     load_crime_location_window(crime_id)
 

@@ -92,11 +92,14 @@ def get_crime_location_by_id(crime_id):
         if conn:
             conn.close()
 
-# def get_crime_coordinates(cl_id):
-#     try:
-#         conn = get_db_connection()
-#         with conn.cursor() as cursor:
-#             cursor.execute("select address, coordinates from crime_location where id = %s", (cl_id))
+def update_coordinates(location_id, coordinates):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("update crime_location set coordinates = %s, id = %s", (coordinates, location_id))
+        conn.commit()
+    except Exception as e:
+        print(f"error: {e}")
 
 def get_suspect_by_id(crime_id):
     try:

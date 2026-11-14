@@ -43,8 +43,8 @@ font-size: 20pt;</string>
      <rect>
       <x>40</x>
       <y>280</y>
-      <width>721</width>
-      <height>341</height>
+      <width>561</width>
+      <height>281</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -54,12 +54,12 @@ font-size: 20pt;</string>
      <string/>
     </property>
    </widget>
-   <widget class="QFrame" name="">
+   <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>50</y>
-      <width>321</width>
+      <width>521</width>
       <height>231</height>
      </rect>
     </property>
@@ -68,13 +68,19 @@ font-size: 20pt;</string>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QFrame" name="">
+      <widget class="QFrame" name="frame">
        <property name="styleSheet">
         <string notr="true">background-color: none;</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="styleSheet">
            <string notr="true">font-size: 16px;
 background-color: none;</string>
@@ -106,6 +112,12 @@ background-color: none;</string>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="label_5">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="styleSheet">
            <string notr="true">font-size: 16px;
 background-color: none;</string>
@@ -137,6 +149,12 @@ background-color: none;</string>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="label_7">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="styleSheet">
            <string notr="true">font-size: 16px;
 background-color: none;</string>
@@ -168,6 +186,12 @@ background-color: none;</string>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QLabel" name="label_9">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="styleSheet">
            <string notr="true">font-size: 16px;
 background-color: none;</string>
@@ -192,6 +216,28 @@ background-color: none;</string>
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>580</y>
+      <width>171</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 15px;
+color: #FFE5E5;</string>
+    </property>
+    <property name="text">
+     <string>Обновить координаты</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
