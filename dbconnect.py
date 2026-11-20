@@ -1,6 +1,7 @@
 import pymysql
 import re
 from password_utils import hash_password
+from recover_codes import hash_recovery_code, verify_recovery_code
 def get_db_connection():
     return pymysql.connect(
         host = 'localhost',
@@ -9,6 +10,142 @@ def get_db_connection():
         password = 'root',
         database = 'criminal_komi'
     )
+
+def reset_user_password(user_id, request_id, password_hash):
+
+    conn = None
+
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+
+            cursor.execute("""
+                UPDATE `user`
+                SET password = %s
+                WHERE id = %s
+            """, (password_hash, user_id))
+
+            cursor.execute("""
+                UPDATE password_reset_requests
+                SET status = 'completed',
+                    completed_at = NOW()
+                WHERE id = %s
+            """, (request_id,))
+
+            conn.commit()
+
+            return True
+
+    except Exception as e:
+        print("Ошибка сброса пароля:", e)
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+def get_password_reset_requests():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    r.id,
+                    u.login,
+                    r.created_at,
+                    r.status,
+                    r.user_id
+                FROM password_reset_requests r
+                JOIN `user` u ON r.user_id = u.id
+                ORDER BY r.created_at DESC
+            """)
+
+            return cursor.fetchall()
+
+    except Exception as e:
+        print("error:", e)
+        return []
+
+    finally:
+        if conn:
+            conn.close()
+
+def create_reset_request(login):
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+
+            cursor.execute("SELECT id FROM `user` WHERE login = %s", (login,))
+
+            user = cursor.fetchone()
+
+            if not user:
+                return False
+
+            user_id = user[0]
+
+            cursor.execute("INSERT INTO password_reset_requests (user_id, status) VALUES (%s, 'pending')", (user_id,))
+
+            conn.commit()
+            return True
+
+    except Exception as e:
+        print("error:", e)
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+def verify_recovery_code_db(user_id, code):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, code_hash
+                FROM user_recovery_codes
+                WHERE user_id = %s
+                  AND used_at IS NULL
+            """, (user_id,))
+
+            codes = cursor.fetchall()
+
+            for code_id, code_hash in codes:
+                if verify_recovery_code(code, code_hash):
+                    cursor.execute("""
+                        UPDATE user_recovery_codes
+                        SET used_at = NOW()
+                        WHERE id = %s
+                    """, (code_id,))
+
+                    conn.commit()
+                    return True
+
+        return False
+
+    finally:
+        conn.close()
+
+def save_recovery_codes(user_id, codes):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            for code in codes:
+                code_hash = hash_recovery_code(code)
+                cursor.execute("INSERT INTO user_recovery_codes (user_id, code_hash) VALUES (%s, %s)", (user_id, code_hash))
+            conn.commit()
+            return True
+
+    except Exception as e:
+        print("error", e)
+        return False
+
+    finally:
+        conn.close()
 
 #регистрация пользователя
 def set_user(login, password):

@@ -4,13 +4,17 @@ import dbconnect
 from translate import translations
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QWidget, QVBoxLayout, QSizePolicy, QMessageBox
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QInputDialog
 from PySide6.QtCore import QTimer, Qt
+from PySide6.QtWidgets import QPushButton
+from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 import os
 import requests
 from dotenv import load_dotenv
 import pyotp
+import secrets
+from password_utils import hash_password
 
 from UI.LogInDialog import Ui_Dialog as Login
 from UI.AdminMainWindow import Ui_MainWindow as AdminWindow
@@ -46,6 +50,7 @@ import logging
 
 from password_utils import verify_password
 from totp_auth import create_totp, verify_totp
+from recover_codes import generate_recovery_codes
 
 admin_ui = None
 user_ui = None
@@ -213,8 +218,84 @@ def open_admin_acc():
 
     admin_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
     admin_acc_ui.pushButton_2.clicked.connect(lambda: admin_acc_window.close())
+    load_reset_requests()
 
     admin_acc_window.show()
+
+def load_reset_requests():
+
+    model = QStandardItemModel()
+
+    model.setHorizontalHeaderLabels(["Логин", "Дата запроса", "Статус", "Действие"])
+
+    admin_acc_ui.tableView.setModel(model)
+
+    requests = dbconnect.get_password_reset_requests()
+
+    for request in requests:
+
+        request_id = request[0]
+        login = request[1]
+        created_at = request[2]
+        status = request[3]
+        user_id = request[4]
+
+        row = model.rowCount()
+        model.insertRow(row)
+
+        model.setItem(row, 0, QStandardItem(str(login)))
+
+        model.setItem(
+            row,
+            1,
+            QStandardItem(
+                created_at.strftime("%d.%m.%Y %H:%M")
+            )
+        )
+
+        status_text = "Ожидает" if status == "pending" else "Выполнен"
+
+        model.setItem(row, 2, QStandardItem(status_text))
+
+        if status == "pending":
+
+            button = QPushButton("Сбросить")
+
+            button.clicked.connect(lambda checked=False, uid=user_id, rid=request_id: reset_user_password(uid, rid))
+
+            admin_acc_ui.tableView.setIndexWidget(model.index(row, 3), button)
+
+    admin_acc_ui.tableView.resizeColumnsToContents()
+
+def reset_user_password(user_id, request_id):
+
+    temporary_password = secrets.token_urlsafe(8)
+
+    password_hash = hash_password(temporary_password)
+
+    if dbconnect.reset_user_password(
+        user_id,
+        request_id,
+        password_hash
+    ):
+
+        QMessageBox.information(
+            admin_window,
+            "Пароль сброшен",
+            f"Временный пароль пользователя:\n\n"
+            f"{temporary_password}\n\n"
+            f"Передайте его пользователю."
+        )
+
+        load_reset_requests()
+
+    else:
+
+        QMessageBox.warning(
+            admin_window,
+            "Ошибка",
+            "Не удалось сбросить пароль."
+        )
 
 def open_user_acc():
     global user_acc_window, user_acc_ui
@@ -254,6 +335,37 @@ def confirm_totp(user_id):
         totp_window.close()
     else:
         totp_ui.label_7.setVisible(True)
+
+    recovery_codes = generate_recovery_codes()
+
+    dbconnect.save_recovery_codes(
+        user_id,
+        recovery_codes
+    )
+    QMessageBox.information(
+        totp_window,
+        "Резервные коды",
+        "Сохраните эти коды в безопасном месте:\n\n" +
+        "\n".join(recovery_codes)
+    )
+
+def enter_recovery_code(user_id, username, role):
+    code, ok = QInputDialog.getText(
+        auth_window,
+        "Резервный код",
+        "Введите резервный код:"
+    )
+
+    if ok and code:
+        if dbconnect.verify_recovery_code_db(user_id, code):
+            auth_window.close()
+            open_user_by_role(user_id, username, role)
+        else:
+            QMessageBox.warning(
+                auth_window,
+                "Ошибка",
+                "Неверный или уже использованный резервный код"
+            )
 
 def open_totp_window(user_id):
     global totp_window, totp_ui, secret
@@ -1398,13 +1510,13 @@ def load_record_window(crime_id):
 def open_auth_window(user_id, username, role, secret):
     global auth_window, auth_ui
 
-            
     auth_window = QMainWindow()
     auth_ui = AuthWindow()
     auth_ui.setupUi(auth_window)
 
     auth_ui.label_5.setVisible(False)
     auth_ui.pushButton.clicked.connect(lambda: verify_auth_code(user_id, username, role, secret))
+    auth_ui.pushButton_2.clicked.connect(lambda: enter_recovery_code(user_id, username, role))
 
     login_window.close()
     auth_window.show()
@@ -1447,7 +1559,6 @@ def authorization():
     password = login_ui.lineEdit_2.text()
 
     user = check_login(login, password)
-    current_user_id = user[0]
 
     if user:
         current_user_id = user[0]
@@ -1466,6 +1577,14 @@ def authorization():
         print("no such user")
         login_ui.label_6.setVisible(True)
         login_ui.label_5.setVisible(True)
+
+def forgot_password():
+    login, ok = QInputDialog.getText(login_window, "Сброс пароля", "Введите логин:")
+
+    if ok and login:
+        dbconnect.create_reset_request(login)
+
+        QMessageBox.information(login_window, "Запрос отправлен", "Запрос на сброс пароля отправлен администратору.")
 
 #проверка на существование пользователя и корректность введенных данных
 def check_login(loginValue, passValue):
@@ -1560,6 +1679,7 @@ def open_login_dialog():
     login_ui.pushButton.clicked.connect(authorization)
     login_ui.pushButton_2.clicked.connect(open_registration_window)
     login_ui.pushButton_3.clicked.connect(lambda: (login_window.close(), open_guest_window()))
+    login_ui.pushButton_4.clicked.connect(forgot_password)
     guest_window.close()
     login_window.show()
 
