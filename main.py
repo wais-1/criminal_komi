@@ -10,6 +10,7 @@ from PySide6.QtCore import QTimer, Qt
 import os
 import requests
 from dotenv import load_dotenv
+import pyotp
 
 from UI.LogInDialog import Ui_Dialog as Login
 from UI.AdminMainWindow import Ui_MainWindow as AdminWindow
@@ -32,10 +33,19 @@ from UI.AddSuspectCrime import Ui_Dialog as AddSuspectCrime
 from UI.CartWindow import Ui_MainWindow as CartWindow
 from UI.GuestWindow import Ui_MainWindow as GuestWindow
 from UI.CrimeLocationWindow import Ui_MainWindow as CrimeLocationWindow
+from UI.AdminAccount import Ui_MainWindow as AdminAccount
+from UI.TotpSetup import Ui_MainWindow as TotpSetup
+from UI.UserAccount import Ui_MainWindow as UserAccount
+from UI.UserAccount import Ui_MainWindow as UserAccount
+from UI.InvAccount import Ui_MainWindow as InvAccount
+from UI.AuthWindow import Ui_Dialog as AuthWindow
 from PySide6.QtCore import QDate
 
 from typing import Optional, Tuple
 import logging
+
+from password_utils import verify_password
+from totp_auth import create_totp, verify_totp
 
 admin_ui = None
 user_ui = None
@@ -174,6 +184,15 @@ def show_toast(parent, message):
 def tr(key):
     return translations[current_language].get(key, key)
 
+#для кликабельности лейблов
+class ClickableLabel(QLabel):
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.window = AdminWindow()
+            self.window.show()
+
+        super().mousePressEvent(event)
+
 def open_cart_window():
     global cart_window, cart_ui
     
@@ -184,6 +203,73 @@ def open_cart_window():
     load_crime_card_in_trash(cart_ui, "cart")
 
     cart_window.show()
+
+def open_admin_acc():
+    global admin_acc_window, admin_acc_ui
+        
+    admin_acc_window = QMainWindow()
+    admin_acc_ui = AdminAccount()
+    admin_acc_ui.setupUi(admin_acc_window)
+
+    admin_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
+    admin_acc_ui.pushButton_2.clicked.connect(lambda: admin_acc_window.close())
+
+    admin_acc_window.show()
+
+def open_user_acc():
+    global user_acc_window, user_acc_ui
+        
+    user_acc_window = QMainWindow()
+    user_acc_ui = UserAccount()
+    user_acc_ui.setupUi(user_acc_window)
+
+    user_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
+    user_acc_ui.pushButton_2.clicked.connect(lambda: user_acc_window.close())
+
+    user_acc_window.show()
+
+def open_inv_acc():
+    global inv_acc_window, inv_acc_ui
+        
+    inv_acc_window = QMainWindow()
+    inv_acc_ui = InvAccount()
+    inv_acc_ui.setupUi(inv_acc_window)
+
+    inv_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
+    inv_acc_ui.pushButton_2.clicked.connect(lambda: inv_acc_window.close())
+
+    inv_acc_window.show()
+
+def confirm_totp(user_id):
+    code = totp_ui.lineEdit.text().strip()
+
+    if verify_totp(secret, code):
+        dbconnect.save_totp_secret(user_id, secret)
+
+        QMessageBox.information(
+            totp_window,
+            "Успех",
+            "2FA подключена!"
+        )
+        totp_window.close()
+    else:
+        totp_ui.label_7.setVisible(True)
+
+def open_totp_window(user_id):
+    global totp_window, totp_ui, secret
+            
+    totp_window = QMainWindow()
+    totp_ui = TotpSetup()
+    totp_ui.setupUi(totp_window)
+
+    totp_ui.label_7.setVisible(False)
+
+    secret, pixmap = create_totp("criminal11_user")
+    totp_ui.label.setPixmap(pixmap)
+    totp_ui.label.setScaledContents(True)
+    totp_ui.pushButton.clicked.connect(lambda: confirm_totp(user_id))
+
+    totp_window.show()
 
 #открытие окна админа
 def open_admin_window():
@@ -206,6 +292,7 @@ def open_admin_window():
     admin_ui.btn_cart.clicked.connect(open_cart_window)
     admin_ui.btn_exit.clicked.connect(lambda:(admin_window.close(), open_guest_window()))
     admin_ui.lineEdit.textChanged.connect(lambda text: live_search(admin_ui, "admin", text))
+    admin_ui.label_5.mousePressEvent = lambda event: open_admin_acc()
 
     admin_ui.cb_lang.clear()
     admin_ui.cb_lang.addItem("ru", "ru")
@@ -277,6 +364,7 @@ def open_user_window():
     user_ui.pushButton_7.clicked.connect(open_filters_dialog)
     user_ui.btn_exit.clicked.connect(lambda:(user_window.close(), open_guest_window()))
     user_ui.line_search.textChanged.connect(lambda text: live_search(user_ui, "user", text))
+    user_ui.lbl_username.mousePressEvent = lambda event: open_user_acc()
 
     user_ui.cb_lang.clear()
     user_ui.cb_lang.addItem("ru", "ru")
@@ -310,6 +398,7 @@ def open_investigator_window():
     investigator_ui.pushButton_13.clicked.connect(open_suspect_crime)
     investigator_ui.btn_exit.clicked.connect(lambda:(investigator_window.close(), open_guest_window()))
     investigator_ui.search.textChanged.connect(lambda text: live_search(investigator_ui, "investigator", text))
+    investigator_ui.lbl_username.mousePressEvent = lambda event: open_inv_acc()
 
     investigator_ui.cb_lang.clear()
     investigator_ui.cb_lang.addItem("ru", "ru")
@@ -1057,8 +1146,6 @@ def soft_delete_card(crime_id):
         )
 
 def restore_crime_card(crime_id):
-    print("ID для восстановления:", crime_id)
-    # print("Результат восстановления:", result)
     answer = QMessageBox.question(
             admin_window,
             "восстановление преступления",
@@ -1308,41 +1395,72 @@ def load_record_window(crime_id):
         protocol_ui.lbl_level.setText(str(record[6] or "не указан"))
         protocol_ui.lbl_programm.setText(str(record[7] or "не указан"))
 
+def open_auth_window(user_id, username, role, secret):
+    global auth_window, auth_ui
 
+            
+    auth_window = QMainWindow()
+    auth_ui = AuthWindow()
+    auth_ui.setupUi(auth_window)
+
+    auth_ui.label_5.setVisible(False)
+    auth_ui.pushButton.clicked.connect(lambda: verify_auth_code(user_id, username, role, secret))
+
+    login_window.close()
+    auth_window.show()
+
+def verify_auth_code(user_id, username, role, secret):
+    code = auth_ui.lineEdit.text().strip()
+
+    if verify_totp(secret, code):
+        auth_window.close()
+
+        open_user_by_role(user_id, username, role)
+    else:
+        auth_ui.label_5.setVisible(True)
+
+def open_user_by_role(user_id, username, role):
+    if role == "Администратор":
+        open_admin_window()
+        admin_ui.label_5.setText(username)
+
+    elif role == "user":
+        open_user_window()
+        user_ui.lbl_username.setText(username)
+
+    elif role == "Следователь":
+        open_investigator_window()
+        investigator_ui.lbl_username.setText(username)
+
+    else:
+        QMessageBox.warning(
+            None,
+            "Ошибка",
+            f"Неизвестная роль пользователя: {role}"
+        )
+        login_window.show()
 
 #авторизация пользователя
 def authorization():
+    global current_user_id
     login = login_ui.lineEdit.text()
     password = login_ui.lineEdit_2.text()
 
     user = check_login(login, password)
+    current_user_id = user[0]
 
     if user:
+        current_user_id = user[0]
         login_window.close()
-
-        user_id = user[0]
         username = user[1]
         role = user[2]
+        totp_enabled = user[3]
+        totp_secret = user[4]
 
-        if role == "Администратор":
-            open_admin_window()
-            admin_ui.label_5.setText(username)
-
-        elif role == "user":
-            open_user_window()
-            user_ui.lbl_username.setText(username)
-
-        elif role == "Следователь":
-            open_investigator_window()
-            investigator_ui.lbl_username.setText(username)
-
+        if totp_enabled:
+            open_auth_window(current_user_id, username, role, totp_secret)
         else:
-            QMessageBox.warning(
-                None,
-                "Ошибка",
-                f"Неизвестная роль пользователя: {role}"
-            )
-            login_window.show()
+            open_user_by_role(current_user_id, username, role)
 
     else:
         print("no such user")
@@ -1351,36 +1469,33 @@ def authorization():
 
 #проверка на существование пользователя и корректность введенных данных
 def check_login(loginValue, passValue):
-    conn = dbconnect.get_db_connection()
+    conn = None
 
     try:
+        conn = dbconnect.get_db_connection()
+
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT user.id, user.login, role.name
-                FROM user
+                SELECT user.id, user.login, role.name, user.password, user.totp_enabled, user.totp_secret
+                FROM `user`
                 JOIN role ON user.id_role = role.id
-                WHERE user.login = %s AND user.password = %s
-            """, (loginValue, passValue))
+                WHERE user.login = %s
+            """, (loginValue,))
 
             user = cursor.fetchone()
 
-        if user:
-            print("ID:", user[0])
-            print("Логин:", user[1])
-            print("Роль:", user[2])
-
-            return user
+        if user and verify_password(passValue, user[3]):
+            return user[0], user[1], user[2], user[4], user[5]
 
         return None
 
     except Exception as e:
-        print(f"error: {e}")
+        print(f"Ошибка авторизации: {e}")
         return None
 
     finally:
         if conn:
             conn.close()
-    
 
 #окно регистрации пользователя
 def open_registration_window():

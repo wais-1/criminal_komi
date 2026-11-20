@@ -1,5 +1,6 @@
 import pymysql
 import re
+from password_utils import hash_password
 def get_db_connection():
     return pymysql.connect(
         host = 'localhost',
@@ -13,13 +14,27 @@ def get_db_connection():
 def set_user(login, password):
     try:
         conn = get_db_connection()
+        password_hash = hash_password(password)
         with conn.cursor() as cursor:
-            cursor.execute("insert into user(login, password, id_role) values (%s, %s, 5)", (login, password))
+            cursor.execute("INSERT INTO `user` (login, password, id_role) VALUES (%s, %s, 5)", (login, password_hash))
             conn.commit()
             return True
     except Exception as e:
         print(f'error: {e}')
         return False
+
+def save_totp_secret(user_id, secret):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("update `user` set totp_secret = %s, totp_enabled = 1 where id = %s", (secret, user_id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f'error: {e}')
+        return False
+    finally:
+        conn.close()
 
 #получение карточки преступления для отображения
 def get_crime_card():
