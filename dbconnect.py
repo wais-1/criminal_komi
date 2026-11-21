@@ -11,36 +11,120 @@ def get_db_connection():
         database = 'criminal_komi'
     )
 
-def reset_user_password(user_id, request_id, password_hash):
+def get_all_users():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select user.id, user.login, role.name from user join role on user.id_role = role.id")
+            roles = cursor.fetchall()
+        return roles
+    except Exception as e:
+        print(f'error: {e}')
 
-    conn = None
+def get_user_role():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select id, name from role")
+            roles = cursor.fetchall()
+        return roles
+    except Exception as e:
+        print(f'error: {e}')
 
+def approve_role_request(user_id, request_id, role_id):
     try:
         conn = get_db_connection()
 
         with conn.cursor() as cursor:
-
             cursor.execute("""
                 UPDATE `user`
-                SET password = %s
+                SET id_role = %s
                 WHERE id = %s
-            """, (password_hash, user_id))
+            """, (role_id, user_id))
 
             cursor.execute("""
-                UPDATE password_reset_requests
+                UPDATE role_requests
                 SET status = 'completed',
                     completed_at = NOW()
                 WHERE id = %s
             """, (request_id,))
 
             conn.commit()
-
             return True
 
     except Exception as e:
-        print("Ошибка сброса пароля:", e)
+        print("error:", e)
         return False
 
+    finally:
+        if conn:
+            conn.close()
+
+def get_set_role_requests():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    r.id,
+                    u.login,
+                    r.created_at,
+                    r.status,
+                    r.user_id,
+                    r.requested_role_id
+                FROM role_requests r
+                JOIN `user` u ON r.user_id = u.id
+                ORDER BY r.created_at DESC
+            """)
+
+            return cursor.fetchall()
+
+    except Exception as e:
+        print("error:", e)
+        return []
+
+    finally:
+        if conn:
+            conn.close()
+
+def request_role(user_id, role_id):
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO role_requests
+                (user_id, requested_role_id)
+                VALUES (%s, %s)
+            """, (user_id, role_id))
+
+            conn.commit()
+            return True
+
+    except Exception as e:
+        print("error:", e)
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+def reset_user_password(user_id, request_id, password_hash):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("UPDATE `user` SET password = %s WHERE id = %s", (password_hash, user_id))
+            cursor.execute("""
+                UPDATE password_reset_requests
+                SET status = 'completed',
+                    completed_at = NOW()
+                WHERE id = %s
+            """, (request_id,))
+            conn.commit()
+            return True
+    except Exception as e:
+        print("error:", e)
+        return False
     finally:
         if conn:
             conn.close()

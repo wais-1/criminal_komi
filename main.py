@@ -43,6 +43,7 @@ from UI.UserAccount import Ui_MainWindow as UserAccount
 from UI.UserAccount import Ui_MainWindow as UserAccount
 from UI.InvAccount import Ui_MainWindow as InvAccount
 from UI.AuthWindow import Ui_Dialog as AuthWindow
+from UI.ChooseRole import Ui_Dialog as ChooseRole
 from PySide6.QtCore import QDate
 
 from typing import Optional, Tuple
@@ -209,6 +210,33 @@ def open_cart_window():
 
     cart_window.show()
 
+def open_choose_role():
+    global choose_role_window, choose_role_ui
+    global current_user_id
+        
+    choose_role_window = QMainWindow()
+    choose_role_ui = ChooseRole()
+    choose_role_ui.setupUi(choose_role_window)
+
+    choose_role_ui.pushButton.clicked.connect(
+        send_role_request
+    )
+
+    roles = dbconnect.get_user_role()
+    choose_role_ui.comboBox.clear()
+
+    #отображение данных вместо id в комбобоксах
+    for i in roles:
+        role_id = i[0]
+        role_name = i[1]
+
+        choose_role_ui.comboBox.addItem(
+            role_name,
+            role_id
+        )
+
+    choose_role_window.show()
+
 def open_admin_acc():
     global admin_acc_window, admin_acc_ui
         
@@ -219,6 +247,8 @@ def open_admin_acc():
     admin_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
     admin_acc_ui.pushButton_2.clicked.connect(lambda: admin_acc_window.close())
     load_reset_requests()
+    load_roles_requests()
+    load_all_users()
 
     admin_acc_window.show()
 
@@ -245,57 +275,165 @@ def load_reset_requests():
 
         model.setItem(row, 0, QStandardItem(str(login)))
 
-        model.setItem(
-            row,
-            1,
-            QStandardItem(
-                created_at.strftime("%d.%m.%Y %H:%M")
-            )
-        )
+        model.setItem(row, 1, QStandardItem(created_at.strftime("%d.%m.%Y %H:%M")))
 
         status_text = "Ожидает" if status == "pending" else "Выполнен"
 
         model.setItem(row, 2, QStandardItem(status_text))
 
         if status == "pending":
-
             button = QPushButton("Сбросить")
-
             button.clicked.connect(lambda checked=False, uid=user_id, rid=request_id: reset_user_password(uid, rid))
-
             admin_acc_ui.tableView.setIndexWidget(model.index(row, 3), button)
 
     admin_acc_ui.tableView.resizeColumnsToContents()
 
-def reset_user_password(user_id, request_id):
+def load_roles_requests():
+    model = QStandardItemModel()
+    model.setHorizontalHeaderLabels(["Логин", "Дата запроса", "Статус", "Роль", "Действие"])
+    admin_acc_ui.tableView_2.setModel(model)
+    requests = dbconnect.get_set_role_requests()
 
-    temporary_password = secrets.token_urlsafe(8)
+    for request in requests:
 
-    password_hash = hash_password(temporary_password)
+        request_id = request[0]
+        login = request[1]
+        created_at = request[2]
+        status = request[3]
+        user_id = request[4]
+        role_id = request[5]
 
-    if dbconnect.reset_user_password(
-        user_id,
-        request_id,
-        password_hash
-    ):
+        row = model.rowCount()
+        model.insertRow(row)
+
+        model.setItem(row, 0, QStandardItem(str(login)))
+        model.setItem(row, 3, QStandardItem(str(role_id)))
+
+        model.setItem(row, 1, QStandardItem(created_at.strftime("%d.%m.%Y %H:%M")))
+
+        status_text = "Ожидает" if status == "pending" else "Выполнен"
+        model.setItem(row, 2, QStandardItem(status_text))
+
+        if status == "pending":
+            button = QPushButton("Назначить")
+            button.clicked.connect(lambda checked=False, uid=user_id, rid=request_id, role_id=role_id: approve_role(uid, rid, role_id))
+            admin_acc_ui.tableView_2.setIndexWidget(model.index(row, 4), button)
+
+    admin_acc_ui.tableView.resizeColumnsToContents()
+
+def load_all_users():
+    model = QStandardItemModel()
+    model.setHorizontalHeaderLabels(["Логин", "Роль", "Действие", "Действие"])
+    admin_acc_ui.tableView_3.setModel(model)
+    requests = dbconnect.get_all_users()
+
+    for request in requests:
+        user_id = request[0]
+        login = request[1]
+        role = request[2]
+
+        row = model.rowCount()
+        model.insertRow(row)
+
+        model.setItem(row, 0, QStandardItem(str(login)))
+        model.setItem(row, 1, QStandardItem(str(role)))
+
+        button = QPushButton("Заблокировать")
+        button.clicked.connect(lambda checked=False, uid=user_id: block_user(uid))
+        admin_acc_ui.tableView_3.setIndexWidget(model.index(row, 2), button)
+
+        button_2 = QPushButton("Разблокировать")
+        button_2.clicked.connect(lambda checked=False, uid=user_id: unblock_user(uid))
+        admin_acc_ui.tableView_3.setIndexWidget(model.index(row, 3), button_2)
+
+    admin_acc_ui.tableView_3.resizeColumnsToContents()
+
+def block_user(user_id):
+    try:
+        conn = dbconnect.get_db_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE user
+                SET is_blocked = 1
+                WHERE id = %s
+            """, (user_id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print("error:", e)
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def unblock_user(user_id):
+    try:
+        conn = dbconnect.get_db_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                UPDATE user
+                SET is_blocked = 0
+                WHERE id = %s
+            """, (user_id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print("error:", e)
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def send_role_request():
+    global current_user_id
+    role_id = choose_role_ui.comboBox.currentData()
+
+    if role_id is None:
+        QMessageBox.warning(
+            choose_role_window,
+            "Ошибка",
+            "Выберите роль."
+        )
+        return
+
+    if dbconnect.request_role(current_user_id, role_id):
 
         QMessageBox.information(
-            admin_window,
-            "Пароль сброшен",
-            f"Временный пароль пользователя:\n\n"
-            f"{temporary_password}\n\n"
-            f"Передайте его пользователю."
+            choose_role_window,
+            "Готово",
+            "Заявка на назначение роли отправлена администратору."
         )
 
-        load_reset_requests()
+        choose_role_window.close()
 
     else:
 
         QMessageBox.warning(
-            admin_window,
+            choose_role_window,
             "Ошибка",
-            "Не удалось сбросить пароль."
+            "Не удалось отправить заявку."
         )
+
+def reset_user_password(user_id, request_id):
+
+    temporary_password = secrets.token_urlsafe(8)
+    password_hash = hash_password(temporary_password)
+
+    if dbconnect.reset_user_password(user_id, request_id,password_hash):
+        QMessageBox.information(admin_window, "Пароль сброшен", f"Временный пароль пользователя:\n\n" f"{temporary_password}\n\n"f"Передайте его пользователю.")
+        load_reset_requests()
+    else:
+        QMessageBox.warning(admin_window, "Ошибка", "Не удалось сбросить пароль.")
+
+def approve_role(user_id, request_id, role_id):
+
+    if dbconnect.approve_role_request(user_id, request_id, role_id):
+        QMessageBox.information(admin_window, "Успех", f"Роль пользователя назначена")
+        load_roles_requests()
+    else:
+        QMessageBox.warning(admin_window, "Ошибка", "Не удалось назначить роль")
 
 def open_user_acc():
     global user_acc_window, user_acc_ui
@@ -306,6 +444,7 @@ def open_user_acc():
 
     user_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
     user_acc_ui.pushButton_2.clicked.connect(lambda: user_acc_window.close())
+    user_acc_ui.pushButton_4.clicked.connect(open_choose_role)
 
     user_acc_window.show()
 
@@ -318,6 +457,7 @@ def open_inv_acc():
 
     inv_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
     inv_acc_ui.pushButton_2.clicked.connect(lambda: inv_acc_window.close())
+    inv_acc_ui.pushButton_4.clicked.connect(open_choose_role)
 
     inv_acc_window.show()
 
@@ -1243,19 +1383,10 @@ def soft_delete_card(crime_id):
         return
 
     if dbconnect.soft_delete(crime_id):
-        # card.deleteLater()
-        QMessageBox.information(
-            admin_window,
-            "Удаление",
-            "Преступление успешно удалено."
-        )
+        QMessageBox.information(admin_window, "Удаление", "Преступление успешно удалено.")
         load_crime_card(admin_ui, "admin")
     else:
-        QMessageBox.critical(
-            admin_window,
-            "Ошибка",
-            "Не удалось удалить преступление и связанные данные."
-        )
+        QMessageBox.critical(admin_window, "Ошибка", "Не удалось удалить преступление и связанные данные.")
 
 def restore_crime_card(crime_id):
     answer = QMessageBox.question(
@@ -1270,19 +1401,10 @@ def restore_crime_card(crime_id):
         return
 
     if dbconnect.restore_crime_from_trash(crime_id):
-        # card.deleteLater()
-        QMessageBox.information(
-            admin_window,
-            "восстановление",
-            "Преступление успешно восстановлено."
-        )
+        QMessageBox.information(admin_window, "восстановление", "Преступление успешно восстановлено.")
         load_crime_card(admin_ui, "admin")
     else:
-        QMessageBox.critical(
-            admin_window,
-            "Ошибка",
-            "Не удалось восстановить преступление и связанные данные."
-        )
+        QMessageBox.critical(admin_window, "Ошибка", "Не удалось восстановить преступление и связанные данные.")
 
 
 #отображение карточки преступления
@@ -1367,8 +1489,6 @@ def load_crime_card(window, role, crime_card=None):
 
 #отображение карточки в корзине
 def load_crime_card_in_trash(window, role):
-    # global crime_card_window, card_crime_ui
-
     crime_card = dbconnect.get_cards_in_trash()
 
     scroll_area = window.scrollArea
@@ -1561,6 +1681,10 @@ def authorization():
     user = check_login(login, password)
 
     if user:
+        if user[5] == 1:
+            QMessageBox.warning(login_window,"Доступ запрещён", "Ваш аккаунт заблокирован.")
+            return
+
         current_user_id = user[0]
         login_window.close()
         username = user[1]
@@ -1575,6 +1699,8 @@ def authorization():
 
     else:
         print("no such user")
+        print("LOGIN:", login)
+        print("USER:", user)
         login_ui.label_6.setVisible(True)
         login_ui.label_5.setVisible(True)
 
@@ -1588,14 +1714,12 @@ def forgot_password():
 
 #проверка на существование пользователя и корректность введенных данных
 def check_login(loginValue, passValue):
-    conn = None
-
     try:
         conn = dbconnect.get_db_connection()
 
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT user.id, user.login, role.name, user.password, user.totp_enabled, user.totp_secret
+                SELECT user.id, user.login, role.name, user.password, user.totp_enabled, user.totp_secret, user.is_blocked
                 FROM `user`
                 JOIN role ON user.id_role = role.id
                 WHERE user.login = %s
@@ -1604,9 +1728,10 @@ def check_login(loginValue, passValue):
             user = cursor.fetchone()
 
         if user and verify_password(passValue, user[3]):
-            return user[0], user[1], user[2], user[4], user[5]
+            return user[0], user[1], user[2], user[4], user[5], user[6]
 
         return None
+    
 
     except Exception as e:
         print(f"Ошибка авторизации: {e}")
