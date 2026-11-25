@@ -15,6 +15,9 @@ from dotenv import load_dotenv
 import pyotp
 import secrets
 from password_utils import hash_password
+from cache import get_cache, save_cache
+from cache import cleanup_cache
+
 
 from UI.LogInDialog import Ui_Dialog as Login
 from UI.AdminMainWindow import Ui_MainWindow as AdminWindow
@@ -92,6 +95,14 @@ def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
     if not address or not address.strip():
         return None, None
 
+    cache_key = f"dadata_address_{address.strip().lower()}"
+
+    cached = get_cache(cache_key)
+
+    if cached is not None:
+        logger.info(f"DaData: данные взяты из кеша: {address}")
+        return cached["latitude"], cached["longitude"]
+
     url = "https://cleaner.dadata.ru/api/v1/clean/address"
 
     headers = {
@@ -131,7 +142,14 @@ def get_coordinates(address: str) -> Tuple[Optional[float], Optional[float]]:
         if not latitude or not longitude:
             return None, None
 
-        return float(latitude), float(longitude)
+        coordinates = {
+            "latitude": float(latitude),
+            "longitude": float(longitude)
+        }
+
+        save_cache(cache_key, coordinates, ttl=3600)
+
+        return coordinates["latitude"], coordinates["longitude"]
 
     except requests.Timeout:
         logger.error("DaData: превышено время ожидания")
@@ -1824,5 +1842,6 @@ def open_guest_window():
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    cleanup_cache()
     open_guest_window()
     sys.exit(app.exec())
