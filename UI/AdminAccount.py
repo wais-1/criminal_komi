@@ -51,11 +51,11 @@ class Ui_MainWindow(object):
         self.scrollArea.setGeometry(QRect(20, 60, 761, 391))
         self.scrollArea.setStyleSheet(u"background-color: transparent;\n"
 "border: none;")
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -370, 761, 761))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -406, 745, 797))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.frame = QFrame(self.scrollAreaWidgetContents)
@@ -135,6 +135,18 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.tableView_3)
 
+        self.pushButton_4 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_4.setObjectName(u"pushButton_4")
+        sizePolicy.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
+        self.pushButton_4.setSizePolicy(sizePolicy)
+        self.pushButton_4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_4.setStyleSheet(u"border-radius: 10px;\n"
+"background-color: #3D0A0A;\n"
+"padding: 5px;\n"
+"color: #FFE5E5;")
+
+        self.verticalLayout_2.addWidget(self.pushButton_4)
+
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -158,5 +170,6 @@ class Ui_MainWindow(object):
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0431\u0440\u043e\u0441 \u043f\u0430\u0440\u043e\u043b\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f:", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0435 \u0440\u043e\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f:", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0441\u0435 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438:", None))
+        self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"\u042d\u043a\u0441\u043f\u043e\u0440\u0442 \u0434\u0430\u043d\u043d\u044b\u0445 \u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\u0445", None))
     # retranslateUi
 

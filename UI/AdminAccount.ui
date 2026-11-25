@@ -77,7 +77,7 @@ color: #FFE5E5;</string>
 border: none;</string>
     </property>
     <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+     <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
     </property>
     <property name="widgetResizable">
      <bool>true</bool>
@@ -86,9 +86,9 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-370</y>
-       <width>761</width>
-       <height>761</height>
+       <y>-406</y>
+       <width>745</width>
+       <height>797</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -204,6 +204,28 @@ font-size: 16pt;</string>
         <property name="styleSheet">
          <string notr="true">background-color: rgba(0, 0, 0, 0.25);
 border-radius: 20px;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 10px;
+background-color: #3D0A0A;
+padding: 5px;
+color: #FFE5E5;</string>
+        </property>
+        <property name="text">
+         <string>Экспорт данных о пользователях</string>
         </property>
        </widget>
       </item>

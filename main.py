@@ -6,7 +6,7 @@ from translate import translations
 from PySide6.QtWidgets import QApplication, QMainWindow, QDialog, QWidget, QVBoxLayout, QSizePolicy, QMessageBox
 from PySide6.QtWidgets import QLabel, QInputDialog
 from PySide6.QtCore import QTimer, Qt
-from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QPushButton, QFileDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 import os
@@ -18,6 +18,12 @@ from password_utils import hash_password
 from cache import get_cache, save_cache
 from cache import cleanup_cache
 
+from export import (
+    export_csv,
+    export_excel,
+    export_json,
+    export_pdf
+)
 
 from UI.LogInDialog import Ui_Dialog as Login
 from UI.AdminMainWindow import Ui_MainWindow as AdminWindow
@@ -47,6 +53,7 @@ from UI.UserAccount import Ui_MainWindow as UserAccount
 from UI.InvAccount import Ui_MainWindow as InvAccount
 from UI.AuthWindow import Ui_Dialog as AuthWindow
 from UI.ChooseRole import Ui_Dialog as ChooseRole
+from UI.ExportWindow import Ui_Dialog as ExportWindow
 from PySide6.QtCore import QDate
 
 from typing import Optional, Tuple
@@ -228,6 +235,216 @@ def open_cart_window():
 
     cart_window.show()
 
+def open_export_window():
+    global export_window, export_ui
+    
+    export_window = QMainWindow()
+    export_ui = ExportWindow()
+    export_ui.setupUi(export_window)
+
+    roles = dbconnect.get_user_role()
+    export_ui.comboBox.clear()
+
+    #отображение данных вместо id в комбобоксах
+    for i in roles:
+        role_id = i[0]
+        role_name = i[1]
+
+        export_ui.comboBox.addItem(
+            role_name,
+            role_id
+        )
+
+    export_ui.pushButton_2.clicked.connect(export_users)
+
+    export_window.show()
+
+def export_users():
+
+    headers, data = get_users_for_export()
+
+    if not data:
+
+        QMessageBox.warning(
+            export_window,
+            "Экспорт",
+            "Нет пользователей, соответствующих фильтрам."
+        )
+
+        return
+
+    # PDF
+    if export_ui.radioButton_4.isChecked():
+
+        filename, _ = QFileDialog.getSaveFileName(
+            export_window,
+            "Сохранить PDF",
+            "",
+            "PDF (*.pdf)"
+        )
+
+        if filename:
+
+            export_pdf(
+                filename,
+                headers,
+                data
+            )
+
+    # CSV
+    elif export_ui.radioButton.isChecked():
+
+        filename, _ = QFileDialog.getSaveFileName(
+            export_window,
+            "Сохранить CSV",
+            "",
+            "CSV (*.csv)"
+        )
+
+        if filename:
+
+            export_csv(
+                filename,
+                headers,
+                data
+            )
+
+    # JSON
+    elif export_ui.radioButton_3.isChecked():
+
+        filename, _ = QFileDialog.getSaveFileName(
+            export_window,
+            "Сохранить JSON",
+            "",
+            "JSON (*.json)"
+        )
+
+        if filename:
+
+            export_json(
+                filename,
+                headers,
+                data
+            )
+
+    # Excel
+    elif export_ui.radioButton_2.isChecked():
+
+        filename, _ = QFileDialog.getSaveFileName(
+            export_window,
+            "Сохранить Excel",
+            "",
+            "Excel (*.xlsx)"
+        )
+
+        if filename:
+
+            export_excel(
+                filename,
+                headers,
+                data
+            )
+
+    else:
+
+        QMessageBox.warning(
+            export_window,
+            "Экспорт",
+            "Выберите формат файла."
+        )
+
+        return
+
+    QMessageBox.information(
+        export_window,
+        "Экспорт",
+        "Данные успешно экспортированы."
+    )
+
+def get_users_for_export():
+
+    model = admin_acc_ui.tableView_3.model()
+
+    if model is None:
+        return [], []
+
+    # Фильтр логина
+    login_filter = (
+        export_ui.lineEdit.text()
+        .strip()
+        .lower()
+    )
+
+    # Фильтр роли
+    selected_role = (
+        export_ui.comboBox.currentText()
+    )
+
+    # Нужно ли добавлять статус блокировки
+    include_block_status = (
+        export_ui.checkBox_2.isChecked()
+    )
+
+    headers = [
+        "Логин",
+        "Роль"
+    ]
+
+    if include_block_status:
+        headers.append("Статус блокировки")
+
+    data = []
+
+    for row in range(model.rowCount()):
+
+        # Получаем данные из tableView_3
+        login = model.item(row, 0).text()
+        role = model.item(row, 1).text()
+
+        # Фильтр по логину
+        if login_filter:
+            if login_filter not in login.lower():
+                continue
+
+        # Фильтр по роли
+        if selected_role != "Все":
+            if role != selected_role:
+                continue
+
+        export_row = [
+            login,
+            role
+        ]
+
+        # Если включили checkbox —
+        # добавляем статус блокировки
+        if include_block_status:
+
+            # Получаем статус из БД
+            user_id = dbconnect.get_user_id_by_login(login)
+
+            if user_id is not None:
+
+                is_blocked = dbconnect.get_user_block_status(
+                    user_id
+                )
+
+                if is_blocked == 1:
+                    blocked_text = "blocked"
+                else:
+                    blocked_text = "unblocked"
+
+            else:
+                blocked_text = "unknown"
+
+            export_row.append(
+                blocked_text
+            )
+
+        data.append(export_row)
+
+    return headers, data
+
 def open_choose_role():
     global choose_role_window, choose_role_ui
     global current_user_id
@@ -264,6 +481,7 @@ def open_admin_acc():
 
     admin_acc_ui.pushButton_3.clicked.connect(lambda: open_totp_window(current_user_id))
     admin_acc_ui.pushButton_2.clicked.connect(lambda: admin_acc_window.close())
+    admin_acc_ui.pushButton_4.clicked.connect(open_export_window)
     load_reset_requests()
     load_roles_requests()
     load_all_users()

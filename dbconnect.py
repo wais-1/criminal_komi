@@ -11,11 +11,71 @@ def get_db_connection():
         database = 'criminal_komi'
     )
 
+def get_user_id_by_login(login):
+
+    conn = None
+
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT id
+                FROM `user`
+                WHERE login = %s
+            """, (login,))
+
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]
+
+            return None
+
+    except Exception as e:
+        print("Ошибка получения ID:", e)
+        return None
+
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_block_status(user_id):
+
+    conn = None
+
+    try:
+        conn = get_db_connection()
+
+        with conn.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT is_blocked
+                FROM `user`
+                WHERE id = %s
+            """, (user_id,))
+
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]
+
+            return None
+
+    except Exception as e:
+        print("Ошибка получения статуса:", e)
+        return None
+
+    finally:
+        if conn:
+            conn.close()
+
 def get_all_users():
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            cursor.execute("select user.id, user.login, role.name from user join role on user.id_role = role.id")
+            cursor.execute("select user.id, user.login, role.name, user.is_blocked from user join role on user.id_role = role.id")
             roles = cursor.fetchall()
         return roles
     except Exception as e:
